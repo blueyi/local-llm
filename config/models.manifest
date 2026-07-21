@@ -24,3 +24,4 @@ c|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Q
 retired|qwen3-coder:30b-a3b-q8_0|||
 retired|qwen3-coder:30b-a3b-q4_K_M|||
 retired|qwen3:8b|||
+retired|qwen3.6:35b-a3b-q8_0|||

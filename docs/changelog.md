@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-07-22（三档部署完成 + 冒烟验证）
+
+- `./scripts/deploy.sh` 一键跑通：A `qwen3.6:27b-q8_0`（29GB，~99MB/s 拉取）+ C `qwen3.5:9b`（6.6GB）落地；B 此前已装。三档对账全 ✓
+- 冒烟（M5 Max 48GB，100% GPU）：
+  - B `qwen3.6:35b-a3b-q4_K_M` @32K ctx：**104 tok/s**（load 5.0s）
+  - A `qwen3.6:27b-q8_0` @16K ctx：**18 tok/s**（稠密 27B Q8，load 7.9s）
+  - C `qwen3.5:9b`：**77 tok/s**；原生识图验证 ✓（正确辨认测试图标）
+- 发现遗留 `qwen3.6:35b-a3b-q8_0`（38GB，旧后台拉取残留）→ 加入 manifest retired 段
+- 待清理（`./scripts/deploy.sh --prune`，可释约 88GB）：coder q8 32GB + coder q4 18GB + 35b-a3b-q8_0 38GB
+
 ## 2026-07-21（一键部署 + 断点续传）
 
 - 新增 **`config/models.manifest`**：模型清单 SSOT（档位|tag|ctx|GGUF 回退直链|mmproj），升级模型只改此文件

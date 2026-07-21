@@ -18,14 +18,14 @@
 
 | 短名 | 来源 | 量化 | 用途 | 状态 |
 |------|------|------|------|------|
-| qwen3.6:27b-q8_0 | ollama | Q8_0 (30GB, 稠密 27B) | 难 bug / 精读 / 复杂推理 | pending |
+| qwen3.6:27b-q8_0 | ollama | Q8_0 (29GB, 稠密 27B) | 难 bug / 精读 / 复杂推理 | **installed** |
 | Qwen3.6-35B-A3B-UD-Q6_K | unsloth GGUF 手动导入 | UD-Q6_K (29GB) | A 档备选（MoE 快 + 高精度） | optional |
 
 ### C — 极限速度
 
 | 短名 | 来源 | 量化 | 用途 | 状态 |
 |------|------|------|------|------|
-| qwen3.5:9b | ollama | Q4_K_M (6.6GB) | 草稿 / 补全 / 快速扫图（原生 vision） | pending |
+| qwen3.5:9b | ollama | Q4_K_M (6.6GB) | 草稿 / 补全 / 快速扫图（原生 vision） | **installed** |
 
 ### 退役（2026-07-21，见 changelog）
 
@@ -51,9 +51,13 @@
 
 <!-- BEGIN OLLAMA LIST -->
 ```
-NAME                        ID              SIZE     MODIFIED    
-qwen3-coder:30b-a3b-q8_0    7b438a19895a    32 GB    3 hours ago    
-qwen3.6:35b-a3b-q4_K_M      07d35212591f    23 GB    3 hours ago    
+NAME                          ID              SIZE      MODIFIED      
+qwen3.5:9b                    6488c96fa5fa    6.6 GB    4 minutes ago    
+qwen3.6:27b-q8_0              cd0210c667bf    29 GB     5 minutes ago    
+qwen3.6:35b-a3b-q8_0          0218f872e86b    38 GB     9 hours ago      
+qwen3-coder:30b-a3b-q4_K_M    06c1097efce0    18 GB     11 hours ago     
+qwen3-coder:30b-a3b-q8_0      7b438a19895a    32 GB     15 hours ago     
+qwen3.6:35b-a3b-q4_K_M        07d35212591f    23 GB     15 hours ago     
 ```
 <!-- END OLLAMA LIST -->
 
