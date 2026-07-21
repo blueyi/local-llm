@@ -51,10 +51,10 @@
 
 <!-- BEGIN OLLAMA LIST -->
 ```
-NAME                      ID              SIZE      MODIFIED       
-qwen3.5:9b                6488c96fa5fa    6.6 GB    53 minutes ago    
-qwen3.6:27b-q8_0          cd0210c667bf    29 GB     54 minutes ago    
-qwen3.6:35b-a3b-q4_K_M    07d35212591f    23 GB     15 hours ago      
+NAME                      ID              SIZE      MODIFIED          
+qwen3.5:9b                6488c96fa5fa    6.6 GB    About an hour ago    
+qwen3.6:27b-q8_0          cd0210c667bf    29 GB     About an hour ago    
+qwen3.6:35b-a3b-q4_K_M    07d35212591f    23 GB     16 hours ago         
 ```
 <!-- END OLLAMA LIST -->
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-07-22（Hermes fallback 接入本地模型）
+
+- 三档全部就绪（deploy.sh 对账 ✓✓✓），main/deep/fast 无缺
+- **Hermes 集成**：`~/.hermes/config.yaml` 注册 `local-ollama` provider（`http://127.0.0.1:11434/v1`），fallback 链末尾追加 `qwen3.6:35b-a3b-q4_K_M`（main）→ `qwen3.5:9b`（fast）兜底；云端 provider 全挂时自动切本地
+- 验证：`hermes chat -q ... --provider local-ollama` 端到端回复正常；`hermes config check` 合法
+- 坑：Qwen3.6 thinking 模型 OpenAI 兼容接口下 reasoning 占 token，`max_tokens` 需 ≥2048，否则 content 为空（finish=length）
+- 改前备份：`~/.hermes/config.yaml.bak-20260721-*`
+
 ## 2026-07-22（清理 + 档位改名 + Gemma 4 评估）
 
 - **磁盘清理**：`deploy.sh --prune` 删除 4 个退役模型 → coder q8 (32GB) + coder q4 (18GB) + 35b-a3b-q8_0 (38GB)，释放 **88GB**（可用盘 1.5Ti→1.6Ti）

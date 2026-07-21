@@ -32,3 +32,28 @@ curl http://127.0.0.1:11434/v1/models
 ## 配置片段
 
 见 [config/defaults.env.example](../config/defaults.env.example)。
+
+## Hermes Agent（已接入）
+
+`~/.hermes/config.yaml` 中已注册 `local-ollama` provider，并把 main/fast 档挂在 fallback 链末尾（云端全挂时自动降级到本地）：
+
+```yaml
+providers:
+  local-ollama:
+    base_url: http://127.0.0.1:11434/v1
+    api_key: ollama
+    models: [qwen3.6:35b-a3b-q4_K_M, qwen3.6:27b-q8_0, qwen3.5:9b]
+fallback_providers:
+  # ...云端条目...
+  - {provider: local-ollama, model: qwen3.6:35b-a3b-q4_K_M}
+  - {provider: local-ollama, model: qwen3.5:9b}
+```
+
+手动指定本地模型跑 Hermes：
+
+```bash
+hermes chat -q "..." -m qwen3.6:35b-a3b-q4_K_M --provider local-ollama
+```
+
+> 注意：Qwen3.6 thinking 系在 OpenAI 兼容接口下 reasoning 占用 completion tokens，
+> 调用方 `max_tokens` 需 ≥2048，否则回复会被 thinking 吃光（finish=length，content 空）。
