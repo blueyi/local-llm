@@ -1,0 +1,10 @@
+.DS_Store
+*.env
+!defaults.env.example
+*.gguf
+*.safetensors
+*.mlx
+models/
+.tmp/
+.cache/
+*.log
