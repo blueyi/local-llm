@@ -56,6 +56,7 @@ ollama run qwen3.6:35b-a3b-q4_K_M
 | `ornith:35b`（21GB, MIT） | 宣称同级 agentic coding SOTA（Terminal-Bench 2.1 / SWE-Bench），可作编码专项 A/B 试验 |
 | `laguna-xs-2.1`（20GB） | 官方页面明示 macOS 已知问题调查中，修复后再评估 |
 | `gemma4:26b`（18GB） | 聊天/创意/多语言备选，编码不行 |
+| `qwen3.6:35b-mlx`（21GB, nvfp4） | 已实测（2026-07-22）：生成 +11~19% 但 8K prompt 处理慢 1.8×、识图断路（自称纯文本）。等修复再评估，Agent 场景暂无优势 |
 
 ## deep 档备选
 

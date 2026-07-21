@@ -1,5 +1,35 @@
 # Changelog
 
+## 2026-07-22（MLX 版对比实测 → 不换，main 档维持 GGUF）
+
+`qwen3.6:35b-mlx`（21GB, nvfp4）vs `qwen3.6:35b-a3b-q4_K_M`（GGUF），冷加载 + 3 场景 + 8K 长 prompt：
+
+| 指标 | GGUF q4_K_M | MLX nvfp4 | 结论 |
+|------|-------------|-----------|------|
+| 短答生成 | 104.7 t/s | 124.8 t/s | MLX +19% |
+| 代码生成 | 102.7 t/s | 114.4 t/s | MLX +11% |
+| 长文生成 | 101.6 t/s | 103.0 t/s | 持平 |
+| **8K prompt 处理** | **2086 t/s** | 1168 t/s | **GGUF 快 1.8×** |
+| tools 调用 | ✓ | ✓ | 持平 |
+| **识图** | ✓ | **✗ 失败**（3 次均称"无法查看图片"，nvfp4 版视觉输入断路） | **GGUF 独有** |
+
+- 决策：**main 档维持 `qwen3.6:35b-a3b-q4_K_M`**。理由：(1) Agent 场景瓶颈是长 prompt 处理，GGUF 快 1.8×，远盖过 MLX 生成端 +11~19%；(2) MLX 版识图实际不可用（Capabilities 标 vision 但推理断路），会砍掉三档的原生多模态卖点
+- MLX 版已 `ollama rm`；tiers.md 观察名单已记录
+
+## 2026-07-22（外部推荐清单 cross-check：维持 v2.1 不变）
+
+Leon 转来一份"48GB Apple Silicon 最强本地模型"推荐清单，逐项对照 ollama.com 实测：
+
+- **Qwen 3.6 35B-A3B / 3.5 27B** → 已是 main 档，清单还漏了原生 vision + 256K ctx 优势
+- **DeepSeek-R1-Distill-32B** → ollama 全系 tag "1 year ago"（2025 初模型），纯文本 128K，已被 Qwen3.6 超越，不换
+- **Gemma 4 31B/26B** → 已评估拒绝（SWE-bench V 17.4 vs 73.4，见 tiers.md 专节）
+- **Qwen3-Coder-30B** → 上一代，v2 已退役
+- **Kimi K2.5 / GLM-5.2 / DeepSeek-V4 / MiniMax-M3** → ollama 均 cloud-only 无本地权重；GLM-4.7-Flash 本地 19GB 可跑但 SWE 59.2 弱于 Qwen3.6 且纯文本
+- **独立 Qwen3-VL** → 冗余（三档原生多模态），v2 已退役
+- **Nemotron-Super 49B** → 2025 老模型，30–34GB 挤占全部预算，不进
+- **结论：三档 v2.1 全部维持**；此类外部清单常滞后 2–6 个月，以 ollama.com/tags 实测 + SWE-bench V 为准
+- **增量采纳**：清单中"本地文生图"为本方案空白 → 新增 image-gen 能力（见下条）
+
 ## 2026-07-22（Hermes fallback 接入本地模型）
 
 - 三档全部就绪（deploy.sh 对账 ✓✓✓），main/deep/fast 无缺
