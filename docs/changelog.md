@@ -30,6 +30,15 @@ Leon 转来一份"48GB Apple Silicon 最强本地模型"推荐清单，逐项对
 - **结论：三档 v2.1 全部维持**；此类外部清单常滞后 2–6 个月，以 ollama.com/tags 实测 + SWE-bench V 为准
 - **增量采纳**：清单中"本地文生图"为本方案空白 → 新增 image-gen 能力（见下条）
 
+## 2026-07-22（v2.2 — 本地文生图能力落地）
+
+- **安装**：`uv tool install mflux 0.18.0`（MLX 原生，32 个 CLI 入口）
+- **主力模型**：`Runpod/FLUX.2-klein-4B-mflux-4bit`（4.3GB）→ `~/Downloads/image-gen-models/`；备选写实向 `filipstrand/Z-Image-Turbo-mflux-4bit`（5.9GB）
+- **冒烟实测（M5 Max）**：768×768 ×4 步 = **3.2s 生成**（含加载共 7.3s），**峰值 MLX 内存 7.96GB** → 可与 main 档 LLM（23GB）同跑；识图验证出图内容正确
+- **选型**：FLUX.2 Klein（2026-01, 4B）取代外部清单推荐的 FLUX.1 Schnell（2024-08, 12B, mflux 官方标 legacy）—— 更小、更快、原生编辑；CLI 方案（mflux）优于 Draw Things（App Store 装需 sudo，不可脚本化）
+- **坑**：huggingface_hub 对 hf-mirror 报 `FileMetadataError`（重定向域名校验），hub 客户端全挂 → 新增 `scripts/pull-image-model.sh` 用 curl 逐文件直拉，`--model <本地路径>` 加载
+- 新增 `docs/image-gen.md`；README / AGENTS.md 同步
+
 ## 2026-07-22（Hermes fallback 接入本地模型）
 
 - 三档全部就绪（deploy.sh 对账 ✓✓✓），main/deep/fast 无缺

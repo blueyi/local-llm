@@ -15,6 +15,7 @@
 | [docs/install.md](./docs/install.md) | 可复现安装步骤 |
 | [docs/models-registry.md](./docs/models-registry.md) | 已装模型登记 |
 | [docs/agent-integration.md](./docs/agent-integration.md) | Cursor / Agent API |
+| [docs/image-gen.md](./docs/image-gen.md) | 本地文生图（mflux / FLUX.2 Klein） |
 | [docs/operations.md](./docs/operations.md) | 更新与排障 |
 | [docs/manual-download.md](./docs/manual-download.md) | 手动下载直链与导入 Ollama/LM Studio |
 | [scripts/](./scripts/) | status / pull-tier / sync-registry |
@@ -30,6 +31,10 @@
 
 > 记法：平时用 main，难题用 deep，赶时间用 fast。三档均原生 vision。
 > 旧 A/B/C 编号已废弃（a→deep b→main c→fast，脚本兼容）。
+
+## 本地文生图（v2.2 新增）
+
+`mflux`（MLX 原生 CLI）+ **FLUX.2 Klein 4B** 4bit：768² 四步 ≈ 3.2s，峰值内存 ~8GB，可与 main 档 LLM 同跑。详见 [docs/image-gen.md](./docs/image-gen.md)。
 
 ## 快速命令
 

@@ -37,6 +37,7 @@
 | 本方案知识库 | `~/workspace/local-llm` |
 | Ollama 权重 | `~/.ollama/` |
 | LM Studio 权重 | 见应用设置（常见 `~/.lmstudio/models`） |
+| 文生图权重（mflux） | `~/Downloads/image-gen-models/` |
 
 用户提到「本地大模型 / Ollama / 换模型」时：先 `move_agent_to_root` 到本目录再改。
 
@@ -50,6 +51,7 @@
 ./scripts/status.sh
 ./scripts/sync-registry.sh
 ./scripts/import-gguf.sh <name> ~/Downloads/llm-gguf/xxx.gguf
+./scripts/pull-image-model.sh <hf-repo>   # 文生图模型下载（hf-mirror 直拉）
 ```
 
 ## 模型清单 SSOT

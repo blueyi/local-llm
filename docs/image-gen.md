@@ -7,7 +7,7 @@
 | 角色 | 模型 | 引擎 | 磁盘 | 峰值内存 | 实测速度 |
 |------|------|------|------|----------|----------|
 | **主力** | FLUX.2 Klein 4B（mflux 4bit） | mflux (MLX) | 4.3GB | **7.96GB** | 768×768 ×4步 ≈ **3.2s**（首次含加载 ~7s） |
-| 备选（写实向） | Z-Image-Turbo 6B（mflux 4bit） | mflux (MLX) | 5.9GB | ~10GB | 9 步，风格更写实 |
+| 备选（写实向） | Z-Image-Turbo 6B（mflux 4bit） | mflux (MLX) | 5.5GB | **7.58GB** | 768×768 ×9步 ≈ **9.3s**（含加载 ~15s） |
 
 - **为什么 FLUX.2 Klein 而不是 FLUX.1 Schnell**：Klein 是 2026-01 新一代，4B 比 Schnell 12B 小 3 倍、质量更好、原生支持编辑（flux2-edit）；外部推荐清单里的 FLUX.1 Schnell 已是 legacy（mflux 官方表格标注 "No (legacy)"）。
 - **为什么 mflux 而不是 Draw Things**：Draw Things 需 App Store 交互安装（`mas` 要 sudo 密码）；mflux 是纯 CLI（MLX 原生，M 系优化），`uv tool install mflux` 即装，可脚本化、可被 Agent 调用。需要 GUI 时再装 Draw Things 不冲突。
