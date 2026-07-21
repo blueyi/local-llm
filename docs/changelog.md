@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-07-21（一键部署 + 断点续传）
+
+- 新增 **`config/models.manifest`**：模型清单 SSOT（档位|tag|ctx|GGUF 回退直链|mmproj），升级模型只改此文件
+- 新增 **`scripts/deploy.sh`**：一键部署
+  - 幂等：已装跳过；`--check` 只对账；`--prune` 交互式清理 retired 模型；`a|b|c` 只装单档
+  - 安装策略：首选 `ollama pull`（原生断点续传）→ 失败回退 GGUF 手动下载+导入
+  - GGUF 断点续传实测验证：先解析 302 → 最终 CDN URL（xethub，支持 HTTP 206），再 `curl -C -` 续传；直接对镜像首跳 `-L -C -` 会报 "doesn't support byte ranges"（已修）；已完整文件按 Content-Length 比对跳过；CDN 签名过期由 5 次重试重新解析覆盖
+  - 镜像：默认 `HF_ENDPOINT=https://hf-mirror.com`（本机 huggingface.co 直连不通），可 env 覆盖
+- `pull-tier.sh` 降级为兼容 wrapper（转发 deploy.sh），消除脚本内硬编码模型名
+- AGENTS.md / README 写入 SSOT 规则与升级流程
+
 ## 2026-07-21（方案 v2 — 模型线升级）
 
 **背景**：原方案基于 Qwen3 一代（qwen3-coder / qwen3-vl / qwen3:8b，2025 年中模型）。核对 Ollama 库（2026-07）后确认已落后两代，升级为 Qwen3.6 / Qwen3.5 原生多模态线。

@@ -43,10 +43,17 @@
 ## 快捷脚本
 
 ```bash
+./scripts/deploy.sh --check   # 体检+对账
+./scripts/deploy.sh           # 一键部署（读 config/models.manifest，断点续传）
+./scripts/deploy.sh --prune   # 部署并清理 retired 模型
 ./scripts/status.sh
-./scripts/pull-tier.sh b    # a=质量 b=平衡 c=速度
 ./scripts/sync-registry.sh
 ./scripts/import-gguf.sh <name> ~/Downloads/llm-gguf/xxx.gguf
-./scripts/import-all-gguf.sh
-./scripts/link-lmstudio-models.sh
 ```
+
+## 模型清单 SSOT
+
+**`config/models.manifest` 是唯一模型清单**（档位、tag、ctx、GGUF 回退直链）。
+升级模型 = 改 manifest → `./scripts/deploy.sh`。
+其他文档（tiers.md / registry / defaults.env）只做说明，**不要在脚本里硬编码模型名**。
+`pull-tier.sh` 已由 deploy.sh 取代（保留兼容）。

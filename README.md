@@ -34,9 +34,13 @@
 ## 快速命令
 
 ```bash
+./scripts/deploy.sh --check   # 体检 + 对账(不安装)
+./scripts/deploy.sh           # 一键部署 manifest 中全部三档
 ./scripts/status.sh
-./scripts/pull-tier.sh b
 ollama run qwen3.6:35b-a3b-q4_K_M
 ```
+
+**升级模型流程**：改 `config/models.manifest`（唯一模型清单）→ `./scripts/deploy.sh` → 完成。
+断点续传：`ollama pull` 原生支持；GGUF 回退路径由 deploy.sh 用 `curl -C -` 对最终 CDN URL 续传。
 
 Cursor / Agent：`http://127.0.0.1:11434/v1`，模型 `qwen3.6:35b-a3b-q4_K_M`（详见 `docs/agent-integration.md`）。
