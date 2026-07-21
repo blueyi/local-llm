@@ -4,7 +4,8 @@
 # 升级模型 = 只改这个文件，然后执行:  ./scripts/deploy.sh
 #
 # 字段（竖线分隔）: TIER|OLLAMA_TAG|NUM_CTX|HF_GGUF_URL|HF_MMPROJ_URL
-#   TIER    : a=最高质量  b=平衡(日常默认)  c=极限速度  retired=待删除
+#   TIER    : main=日常主力  deep=深度质量  fast=极限速度  retired=待删除
+#             (记法: 平时用 main, 难题用 deep, 赶时间用 fast)
 #   OLLAMA_TAG : ollama 官方 tag（首选安装路径，pull 原生断点续传）
 #   NUM_CTX : 手动 GGUF 导入时写入 Modelfile 的默认上下文
 #   HF_GGUF_URL : ollama pull 失败时的 GGUF 回退直链（huggingface.co
@@ -15,12 +16,12 @@
 # 不要在任何脚本里再硬编码模型名。
 # =============================================================
 
-# ---- 当前方案 v2（2026-07-21，Qwen3.6/3.5 原生多模态三档）----
-b|qwen3.6:35b-a3b-q4_K_M|65536|https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/mmproj-F16.gguf
-a|qwen3.6:27b-q8_0|32768|https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/Qwen3.6-27B-Q8_0.gguf|https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/mmproj-F16.gguf
-c|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+# ---- 当前方案 v2.1（2026-07-22，Qwen3.6/3.5 原生多模态三档）----
+main|qwen3.6:35b-a3b-q4_K_M|65536|https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/mmproj-F16.gguf
+deep|qwen3.6:27b-q8_0|32768|https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/Qwen3.6-27B-Q8_0.gguf|https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/mmproj-F16.gguf
+fast|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
 
-# ---- 退役（deploy.sh --prune 时删除）----
+# ---- 退役（deploy.sh --prune 时删除；已清理的保留在此作历史记录）----
 retired|qwen3-coder:30b-a3b-q8_0|||
 retired|qwen3-coder:30b-a3b-q4_K_M|||
 retired|qwen3:8b|||

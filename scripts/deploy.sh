@@ -6,10 +6,10 @@
 #
 # 用法:
 #   ./scripts/deploy.sh                # 部署 manifest 中所有 a/b/c 档
-#   ./scripts/deploy.sh b              # 只部署某一档 (a|b|c)
+#   ./scripts/deploy.sh main           # 只部署某一档 (main|deep|fast)
 #   ./scripts/deploy.sh --check        # 只体检环境+对账，不安装
 #   ./scripts/deploy.sh --prune        # 部署后删除 retired 档模型（需确认）
-#   ./scripts/deploy.sh b --gguf       # 强制走 GGUF 手动下载路径（跳过 ollama pull）
+#   ./scripts/deploy.sh main --gguf    # 强制走 GGUF 手动下载路径（跳过 ollama pull）
 #
 # 安装策略（每个模型）:
 #   1) 首选 ollama pull <tag>       —— 原生断点续传，最省事
@@ -33,7 +33,10 @@ DO_PRUNE=0
 FORCE_GGUF=0
 for arg in "$@"; do
   case "$arg" in
-    a|b|c)        ONLY_TIER="$arg" ;;
+    main|deep|fast) ONLY_TIER="$arg" ;;
+    a) ONLY_TIER="deep" ;;   # 旧档位兼容
+    b) ONLY_TIER="main" ;;
+    c) ONLY_TIER="fast" ;;
     --check)      DO_CHECK=1 ;;
     --prune)      DO_PRUNE=1 ;;
     --gguf)       FORCE_GGUF=1 ;;

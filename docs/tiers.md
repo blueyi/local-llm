@@ -1,57 +1,63 @@
 # 三档模型矩阵
 
-统一以 **Qwen3.6 / Qwen3.5 系** 为主（原生多模态，一个模型覆盖文本+识图）。精确 tag 以 [models-registry.md](./models-registry.md) 为准。
+统一以 **Qwen3.6 / Qwen3.5 系** 为主（原生多模态，一个模型覆盖文本+识图）。
+**安装依据是 `config/models.manifest`（SSOT）**，本文只做说明。
 
-> 2026-07-21 方案升级：`qwen3-coder`（Qwen3 一代）与独立 `qwen3-vl` 线全部退役。
-> Qwen3.6-35B-A3B 在 SWE-bench Verified（73.4%）与 Terminal-Bench 2.0（51.5%）上
-> 反超同级编码专用模型（Laguna XS 2.1 / North Mini Code / GLM-4.7-Flash），且原生支持图像输入。
+## 档位命名（v2.1，按用途取名）
 
-## B — 平衡（日常默认，Q4_K_M）
+| 档位 | 记法 | 模型 | 大小 | 实测速度 | 建议上下文 |
+|------|------|------|------|----------|------------|
+| **main** | 平时用 | `qwen3.6:35b-a3b-q4_K_M` | 23GB | 104 tok/s | 32K–64K |
+| **deep** | 难题用 | `qwen3.6:27b-q8_0`（稠密） | 29GB | 18 tok/s | 16K–32K |
+| **fast** | 赶时间 | `qwen3.5:9b` | 6.6GB | 77 tok/s | 8K–32K |
 
-| 场景 | 模型 | 大小 | 建议上下文 |
-|------|------|------|------------|
-| 编程 / Agent / 通用 / 识图（全能主力） | `qwen3.6:35b-a3b-q4_K_M` | 24GB | 32K–64K |
-| 同上，解码更快（MTP 多 token 预测） | `qwen3.6:35b-a3b-mtp-q4_K_M` | 23GB | 32K–64K |
-| 同上，Apple Silicon MLX 引擎 | `qwen3.6:35b-mlx` | 22GB | 32K–64K |
+（旧 A/B/C 编号已废弃：a→deep，b→main，c→fast，脚本仍兼容）
 
-三者同源同权重，**装一个即可**（默认 q4_K_M；追求解码速度可换 mtp 或 mlx 变体，实测后二选一）。
+## 场景切换
 
-原则：一天常驻一个 B 档模型；识图无需切换（原生 vision）。
+| 你在做什么 | 档位 | 模型 |
+|------------|------|------|
+| 日常写代码、Cursor Agent、识图、长文 | main | `qwen3.6:35b-a3b-q4_K_M` |
+| 难 bug / 架构推演 / 精读（慢而准） | deep | `qwen3.6:27b-q8_0` |
+| 补全、草稿、快问快答、快速扫图 | fast | `qwen3.5:9b` |
 
-## A — 最高质量
+```bash
+./scripts/deploy.sh --check
+ollama run qwen3.6:35b-a3b-q4_K_M
+```
 
-| 场景 | 模型 | 大小 | 建议上下文 |
-|------|------|------|------------|
-| 难 bug / 精读 / 复杂推理 | `qwen3.6:27b-q8_0`（稠密 27B） | 30GB | 16K–32K |
-| 备选：35B-A3B 中间量化 | unsloth `Qwen3.6-35B-A3B-UD-Q6_K.gguf` 手动导入 | 29GB | 16K–32K |
+原则：一次只常驻一个大模型（main/deep 二选一）；识图无需切换（三档均原生 vision）。
 
-⚠️ 不再推荐 `qwen3.6:35b-a3b-q8_0`：实际 **39GB**，超出 34–38GB 内存预算，上下文会被挤死。
+## 选型依据（2026-07 复核，全球范围）
 
-## C — 极限速度
+编码/Agent 是本机主用途，以 SWE-bench Verified / Terminal-Bench 为主标尺：
 
-| 场景 | 模型 | 大小 | 建议上下文 |
-|------|------|------|------------|
-| 草稿 / 补全 / 快速扫图 | `qwen3.5:9b` | 6.6GB | 8K–32K |
+| 模型 | SWE-bench V | 结论 |
+|------|-------------|------|
+| **Qwen3.6-35B-A3B** | **73.4%** | ✅ main：同级第一，且原生多模态 |
+| Laguna XS 2.1 (33B) | 70.9% | macOS 官方已知问题未修 |
+| North Mini Code (30B) | 67.6% | 弱于 Qwen3.6，纯文本 |
+| GLM-4.7-Flash (30B) | 59.2% | 弱于 Qwen3.6，纯文本 |
+| **Gemma 4 26B-A4B** | **17.4%** | ❌ 编码/Agent 差距悬殊（见下） |
 
-一个模型同时覆盖原 `qwen3:8b`（草稿）+ `qwen3-vl:8b`（扫图）两个位置。
+### 为什么不用 Gemma 4
+
+明确评估过，不适合本机的主用途：
+
+- **编码硬伤**：SWE-bench Verified 17.4 vs 73.4（差 56 分）；MCP 工具调用得分约为 Qwen3.6 一半；社区报告 vLLM/Ollama 下 tool-call 格式需额外 JSON 修补、多轮生成有 bug（2026-04 实测汇总，grigio.org）
+- **Arena 强是「聊天偏好」信号**：Gemma 4 31B Arena ELO #3 名列前茅，但那衡量对话讨喜度，不是 agentic 工程能力
+- **它赢的维度本机用不上/已覆盖**：多语言客服、创意写作、视频理解、edge 端部署
+- 若未来需要「聊天/创意/日文西文」专用模型，可考虑 `gemma4:26b`（18GB）进 watch 名单，不占三档
 
 ## 观察名单（暂不进档）
 
 | 模型 | 理由 |
 |------|------|
-| `ornith:35b`（21GB, MIT） | 3 周前发布，宣称同级 agentic coding SOTA（Terminal-Bench 2.1 / SWE-Bench），可作编码专项 A/B 试验 |
-| `laguna-xs-2.1`（20GB） | 官方页面明示 **macOS 已知问题调查中**，修复后再评估 |
-| `glm-4.7-flash`（19GB） | SWE-bench 59.2 低于 Qwen3.6；纯文本、198K 上下文 |
+| `ornith:35b`（21GB, MIT） | 宣称同级 agentic coding SOTA（Terminal-Bench 2.1 / SWE-Bench），可作编码专项 A/B 试验 |
+| `laguna-xs-2.1`（20GB） | 官方页面明示 macOS 已知问题调查中，修复后再评估 |
+| `gemma4:26b`（18GB） | 聊天/创意/多语言备选，编码不行 |
 
-## 切换工作流
+## deep 档备选
 
-| 你在做什么 | 档位 | 模型 |
-|------------|------|------|
-| 日常写代码、Cursor Agent、识图 | B | `qwen3.6:35b-a3b-q4_K_M` |
-| 难 bug / 架构 / 精读长文 | A | `qwen3.6:27b-q8_0` |
-| 补全、起草稿、快速扫图 | C | `qwen3.5:9b` |
-
-```bash
-./scripts/pull-tier.sh b   # 或 a / c
-ollama run qwen3.6:35b-a3b-q4_K_M
-```
+不再推荐 `qwen3.6:35b-a3b-q8_0`：实际 39GB，超出 34–38GB 内存预算。
+如需 MoE 速度 + 更高精度：unsloth `Qwen3.6-35B-A3B-UD-Q6_K.gguf`（29GB）手动导入。

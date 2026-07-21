@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-07-22（清理 + 档位改名 + Gemma 4 评估）
+
+- **磁盘清理**：`deploy.sh --prune` 删除 4 个退役模型 → coder q8 (32GB) + coder q4 (18GB) + 35b-a3b-q8_0 (38GB)，释放 **88GB**（可用盘 1.5Ti→1.6Ti）
+- **档位改名**（A/B/C 不好记 → 按用途取名）：
+  - `b` → **main**（日常主力）
+  - `a` → **deep**（深度质量，难题用）
+  - `c` → **fast**（极限速度，赶时间用）
+  - deploy.sh 兼容旧 a/b/c 参数自动映射；manifest/docs/env 全部同步
+- **Gemma 4 评估（结论：不进三档）**：编码/Agent 差距悬殊 —— SWE-bench Verified 17.4 vs Qwen3.6 的 73.4（-56 分）、MCP 工具调用约一半、社区报告 tool-call 需 JSON 修补 + 多轮 bug；Arena ELO 高（31B 排 #3）但那是聊天偏好信号，非工程能力。它赢的维度（多语言、创意、视频、edge）非本机主用途。`gemma4:26b` 列入观察名单作聊天/创意备选
+- **全球最新复核（ollama.com newest, 2026-07-22）**：glm-5.2 / kimi-k2.7-code / nemotron-3-ultra / minimax-m3 均 cloud-only 不可本地；本地可跑新模型中无超越 Qwen3.6-35B-A3B 者。方案 v2.1 维持 Qwen3.6/3.5 三档
+
 ## 2026-07-22（三档部署完成 + 冒烟验证）
 
 - `./scripts/deploy.sh` 一键跑通：A `qwen3.6:27b-q8_0`（29GB，~99MB/s 拉取）+ C `qwen3.5:9b`（6.6GB）落地；B 此前已装。三档对账全 ✓

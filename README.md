@@ -20,22 +20,23 @@
 | [scripts/](./scripts/) | status / pull-tier / sync-registry |
 | [config/](./config/) | Modelfile、defaults 示例 |
 
-## 三档速览
+## 三档速览（main / deep / fast）
 
-| 档位 | 场景 | 默认方向 |
-|------|------|----------|
-| **A 最高质量** | 难 bug、复杂推理、精读 | `qwen3.6:27b-q8_0`（稠密）；上下文偏短 |
-| **B 平衡（日常默认）** | 编程 Agent、长文、识图 | `qwen3.6:35b-a3b-q4_K_M`（全能，原生 vision） |
-| **C 极限速度** | 草稿、补全、快速扫图 | `qwen3.5:9b`（原生 vision） |
+| 档位 | 场景 | 模型 | 实测 |
+|------|------|------|------|
+| **main 日常主力** | 编程 Agent、长文、识图 | `qwen3.6:35b-a3b-q4_K_M` (23GB) | 104 tok/s |
+| **deep 深度质量** | 难 bug、复杂推理、精读 | `qwen3.6:27b-q8_0` (29GB) | 18 tok/s |
+| **fast 极限速度** | 草稿、补全、快速扫图 | `qwen3.5:9b` (6.6GB) | 77 tok/s |
 
-> 2026-07-21 方案 v2：Qwen3.6/3.5 原生多模态，一个模型同时覆盖文本+识图；
-> `qwen3-coder` / 独立 `qwen3-vl` 线退役（见 `docs/changelog.md`）。
+> 记法：平时用 main，难题用 deep，赶时间用 fast。三档均原生 vision。
+> 旧 A/B/C 编号已废弃（a→deep b→main c→fast，脚本兼容）。
 
 ## 快速命令
 
 ```bash
 ./scripts/deploy.sh --check   # 体检 + 对账(不安装)
 ./scripts/deploy.sh           # 一键部署 manifest 中全部三档
+./scripts/deploy.sh main      # 只装某一档 (main|deep|fast)
 ./scripts/status.sh
 ollama run qwen3.6:35b-a3b-q4_K_M
 ```

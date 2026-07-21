@@ -45,6 +45,7 @@
 ```bash
 ./scripts/deploy.sh --check   # 体检+对账
 ./scripts/deploy.sh           # 一键部署（读 config/models.manifest，断点续传）
+./scripts/deploy.sh main      # 只装某一档 (main=日常 deep=难题 fast=速度)
 ./scripts/deploy.sh --prune   # 部署并清理 retired 模型
 ./scripts/status.sh
 ./scripts/sync-registry.sh

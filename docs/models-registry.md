@@ -4,9 +4,9 @@
 
 更新：`./scripts/sync-registry.sh` 或手动编辑。
 
-## 目标清单（按档，2026-07-21 方案 v2）
+## 目标清单（按档，2026-07-22 方案 v2.1：main/deep/fast）
 
-### B — 平衡（日常默认）
+### main — 日常主力
 
 | 短名 | 来源 | 量化 | 用途 | 状态 |
 |------|------|------|------|------|
@@ -14,14 +14,14 @@
 | qwen3.6:35b-a3b-mtp-q4_K_M | ollama | Q4_K_M+MTP (23GB) | 同上，解码更快（可选平替） | optional |
 | qwen3.6:35b-mlx | ollama | MLX 4bit (22GB) | 同上，MLX 引擎（可选平替） | optional |
 
-### A — 最高质量
+### deep — 深度质量
 
 | 短名 | 来源 | 量化 | 用途 | 状态 |
 |------|------|------|------|------|
 | qwen3.6:27b-q8_0 | ollama | Q8_0 (29GB, 稠密 27B) | 难 bug / 精读 / 复杂推理 | **installed** |
 | Qwen3.6-35B-A3B-UD-Q6_K | unsloth GGUF 手动导入 | UD-Q6_K (29GB) | A 档备选（MoE 快 + 高精度） | optional |
 
-### C — 极限速度
+### fast — 极限速度
 
 | 短名 | 来源 | 量化 | 用途 | 状态 |
 |------|------|------|------|------|
@@ -41,9 +41,9 @@
 
 | 档位 | 文本 | 多模态 |
 |------|------|--------|
-| B (24GB) | 32K–64K | 32K–64K + 少图 |
-| A (30GB) | 16K–32K | 8K–16K |
-| C (6.6GB) | 8K–32K | 8K–32K |
+| main (23GB) | 32K–64K | 32K–64K + 少图 |
+| deep (29GB) | 16K–32K | 8K–16K |
+| fast (6.6GB) | 8K–32K | 8K–32K |
 
 同时只加载一个大模型（≥18GB）。
 
@@ -51,13 +51,10 @@
 
 <!-- BEGIN OLLAMA LIST -->
 ```
-NAME                          ID              SIZE      MODIFIED      
-qwen3.5:9b                    6488c96fa5fa    6.6 GB    4 minutes ago    
-qwen3.6:27b-q8_0              cd0210c667bf    29 GB     5 minutes ago    
-qwen3.6:35b-a3b-q8_0          0218f872e86b    38 GB     9 hours ago      
-qwen3-coder:30b-a3b-q4_K_M    06c1097efce0    18 GB     11 hours ago     
-qwen3-coder:30b-a3b-q8_0      7b438a19895a    32 GB     15 hours ago     
-qwen3.6:35b-a3b-q4_K_M        07d35212591f    23 GB     15 hours ago     
+NAME                      ID              SIZE      MODIFIED       
+qwen3.5:9b                6488c96fa5fa    6.6 GB    53 minutes ago    
+qwen3.6:27b-q8_0          cd0210c667bf    29 GB     54 minutes ago    
+qwen3.6:35b-a3b-q4_K_M    07d35212591f    23 GB     15 hours ago      
 ```
 <!-- END OLLAMA LIST -->
 
