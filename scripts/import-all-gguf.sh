@@ -7,7 +7,7 @@ IMPORT="$ROOT/scripts/import-gguf.sh"
 
 if [[ ! -d "$DIR" ]]; then
   echo "Directory not found: $DIR"
-  echo "Create it and place GGUF files there (see docs/manual-download.md)."
+  echo "Create it and place GGUF files there (see docs/install.md)."
   exit 1
 fi
 
@@ -33,6 +33,6 @@ import_if "qwen3-coder-a-q8" "*Coder*30B*Q8_0*.gguf" 32768
 import_if "qwen3.6-chat-a-q8" "*Qwen3.6*35B*Q8_0*.gguf" 32768
 
 echo
-echo "VL models: prefer LM Studio (main GGUF + mmproj). See docs/manual-download.md"
+echo "VL models: prefer LM Studio (main GGUF + mmproj). See docs/install.md"
 echo "Done. ollama list:"
 ollama list || true

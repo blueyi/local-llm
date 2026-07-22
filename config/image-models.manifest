@@ -1,20 +1,23 @@
 # =============================================================
-# image-models.manifest — 文生图模型唯一清单（SSOT）
+# image-models.manifest — the single source of truth for image-gen models
 # =============================================================
-# 与 config/models.manifest（LLM）平行：升级/换模型只改这个文件。
+# Parallel to config/models.manifest (LLM): upgrading/replacing an
+# image model = edit only this file.
 #
-# 字段（竖线分隔）: ROLE|MODEL_ID|HF_REPO|GEN_CLI|EDIT_CLI|BASE_MODEL_ARG|STEPS
-#   ROLE           : primary=默认  alt=备选  retired=待删除
-#   MODEL_ID       : 本方案内的短名（lm image --model <id> / Hermes image_gen.model）
-#   HF_REPO        : 权重来源（lm pull-image 用；下载到 ~/models/image-gen/<basename>）
-#   GEN_CLI        : mflux 出图命令
-#   EDIT_CLI       : 图生图/改图命令（不支持则留空）
-#   BASE_MODEL_ARG : GEN_CLI 需要的 --base-model 值（不需要则留空）
-#   STEPS          : 默认采样步数
+# Fields (pipe-separated): ROLE|MODEL_ID|HF_REPO|GEN_CLI|EDIT_CLI|BASE_MODEL_ARG|STEPS
+#   ROLE           : primary=default  alt=alternative  retired=to delete
+#   MODEL_ID       : short name within this stack (lm image --model <id> /
+#                    Hermes image_gen.model)
+#   HF_REPO        : weights source (used by lm pull-image; downloaded to
+#                    ~/models/image-gen/<basename>)
+#   GEN_CLI        : mflux text-to-image command
+#   EDIT_CLI       : image-to-image / edit command (empty if unsupported)
+#   BASE_MODEL_ARG : --base-model value required by GEN_CLI (empty if not needed)
+#   STEPS          : default sampling steps
 #
-# 权重目录规则: ~/models/image-gen/$(basename HF_REPO)/
+# Weights directory rule: ~/models/image-gen/$(basename HF_REPO)/
 # =============================================================
 
-# ---- 当前方案 v2.3（2026-07-22）----
+# ---- Current lineup v2.3 (2026-07-22) ----
 primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
 alt|z-image-turbo|filipstrand/Z-Image-Turbo-mflux-4bit|mflux-generate-z-image-turbo|||9

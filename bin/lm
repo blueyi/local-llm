@@ -1,29 +1,30 @@
 #!/usr/bin/env bash
 # =============================================================
-# lm — 本地大模型方案统一入口（local-llm CLI）
+# lm — unified entry point for the local model stack (local-llm CLI)
 # =============================================================
-# 一切本地模型操作从这里走。子命令分发到 scripts/。
+# All local model operations go through this command.
+# Subcommands are dispatched to scripts/.
 #
-# 用法: lm <command> [args...]
+# Usage: lm <command> [args...]
 #
-# 【日常】
-#   lm status                     # 总览: 模型/权重目录/内存/磁盘
-#   lm run [main|deep|fast]       # 交互聊天 (默认 main; 也可直接给 ollama tag)
-#   lm test [tag] [prompt]        # 冒烟测试 + tok/s
-#   lm image "prompt"             # 文生图 (--model/--size/--steps/--seed/--edit, 见 lm image --help)
+# [Daily]
+#   lm status                     # Overview: models / weights dirs / disk
+#   lm run [main|deep|fast]       # Interactive chat (default: main; any ollama tag also works)
+#   lm test [tag] [prompt]        # Smoke test + tok/s
+#   lm image "prompt"             # Text-to-image (--model/--size/--steps/--seed/--edit, see lm image --help)
 #
-# 【部署 / 升级】
-#   lm check                      # 体检 + manifest 对账 (不安装)
-#   lm deploy [main|deep|fast]    # 按 manifest 部署 LLM (--prune 清理 retired, --gguf 强制手动)
-#   lm pull-image <hf-repo>       # 下载文生图权重 (hf-mirror 直拉到 ~/models/image-gen)
+# [Deploy / Upgrade]
+#   lm check                      # Health check + manifest reconciliation (no install)
+#   lm deploy [main|deep|fast]    # Deploy LLMs per manifest (--prune removes retired, --gguf forces manual path)
+#   lm pull-image <hf-repo>       # Download image-gen weights (direct pull via hf-mirror to ~/models/image-gen)
 #
-# 【维护】
-#   lm import <name> <gguf> [ctx] # 手动导入单个 GGUF 到 Ollama
-#   lm sync                       # 把 ollama list 回写 docs/models-registry.md
-#   lm help                       # 本帮助
+# [Maintenance]
+#   lm import <name> <gguf> [ctx] # Manually import a single GGUF into Ollama
+#   lm sync                       # Write `ollama list` back into docs/models-registry.md
+#   lm help                       # This help
 #
-# 模型清单 SSOT: config/models.manifest (LLM) + config/image-models.manifest (文生图)
-# 权重统一目录: ~/models/{ollama,gguf,image-gen}
+# Model list SSOT: config/models.manifest (LLM) + config/image-models.manifest (image-gen)
+# Unified weights root: ~/models/{ollama,gguf,image-gen}
 # =============================================================
 set -euo pipefail
 
@@ -37,7 +38,7 @@ case "$CMD" in
   status)      exec "$S/status.sh" "$@" ;;
   run)
     TAG="${1:-main}"
-    # 档位名 → manifest 里的 tag；否则原样透传给 ollama
+    # Tier name -> manifest tag; otherwise pass through to ollama as-is
     if grep -qE "^$TAG\|" "$ROOT/config/models.manifest" 2>/dev/null; then
       TAG="$(grep -E "^$TAG\|" "$ROOT/config/models.manifest" | head -1 | cut -d'|' -f2)"
     fi
@@ -50,5 +51,5 @@ case "$CMD" in
   import)      exec "$S/import-gguf.sh" "$@" ;;
   sync)        exec "$S/sync-registry.sh" "$@" ;;
   help|-h|--help) usage ;;
-  *) echo "未知命令: $CMD"; echo; usage; exit 1 ;;
+  *) echo "Unknown command: $CMD"; echo; usage; exit 1 ;;
 esac

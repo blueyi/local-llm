@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
 # =============================================================
-# gen-image.sh — 本地文生图 / 图生图统一包装（读 image-models.manifest）
+# gen-image.sh — unified local text-to-image / image-edit wrapper
+#                (reads config/image-models.manifest)
 # =============================================================
-# 用法:
-#   ./scripts/gen-image.sh "a cute orange kitten"                    # primary 模型出图
-#   ./scripts/gen-image.sh --model z-image-turbo "portrait photo"    # 指定模型
-#   ./scripts/gen-image.sh --edit in.png "make the sky sunset" out.png  # 改图(仅支持 EDIT_CLI 的模型)
-#   ./scripts/gen-image.sh --size 1024x576 --steps 6 --seed 42 "..." # 精细控制
+# Usage:
+#   ./scripts/gen-image.sh "a cute orange kitten"                    # generate with primary model
+#   ./scripts/gen-image.sh --model z-image-turbo "portrait photo"    # pick a model
+#   ./scripts/gen-image.sh --edit in.png "make the sky sunset" out.png  # edit (models with EDIT_CLI only)
+#   ./scripts/gen-image.sh --size 1024x576 --steps 6 --seed 42 "..." # fine control
 #
-# 选项:
-#   --model <id>     模型短名 (见 config/image-models.manifest, 默认 primary)
-#   --size  WxH      分辨率 (默认 768x768, 用 16 的倍数)
-#   --steps N        采样步数 (默认取 manifest)
-#   --seed  N        随机种子 (默认随机)
-#   --out   PATH     输出文件 (默认 ~/Pictures/gen/<timestamp>.png)
-#   --edit  IN.png   图生图模式: 以 IN.png 为底图按 prompt 修改
+# Options:
+#   --model <id>     model short name (see config/image-models.manifest, default: primary)
+#   --size  WxH      resolution (default 768x768, use multiples of 16)
+#   --steps N        sampling steps (default: from manifest)
+#   --seed  N        random seed (default: random)
+#   --out   PATH     output file (default ~/Pictures/gen/<timestamp>.png)
+#   --edit  IN.png   image-to-image mode: modify IN.png according to the prompt
 # =============================================================
 set -euo pipefail
 
@@ -35,11 +36,11 @@ while [[ $# -gt 0 ]]; do
     *) if [[ -z "$PROMPT" ]]; then PROMPT="$1"; else OUT="${OUT:-$1}"; fi; shift ;;
   esac
 done
-[[ -n "$PROMPT" ]] || { echo "ERROR: 缺 prompt (用 --help 看用法)"; exit 1; }
+[[ -n "$PROMPT" ]] || { echo "ERROR: missing prompt (see --help)"; exit 1; }
 
-# ---- 从 manifest 解析模型行 ----
+# ---- Resolve model row from manifest ----
 pick_row() {
-  # 无 --model → primary 行；有 → 按 MODEL_ID 匹配
+  # No --model -> primary row; otherwise match by MODEL_ID
   if [[ -z "$MODEL_ID" ]]; then
     grep -E '^primary\|' "$MANIFEST" | head -1
   else
@@ -47,11 +48,11 @@ pick_row() {
   fi
 }
 ROW="$(pick_row)"
-[[ -n "$ROW" ]] || { echo "ERROR: manifest 中找不到模型 '$MODEL_ID'"; grep -E '^(primary|alt)\|' "$MANIFEST" | cut -d'|' -f1,2; exit 1; }
+[[ -n "$ROW" ]] || { echo "ERROR: model '$MODEL_ID' not found in manifest"; grep -E '^(primary|alt)\|' "$MANIFEST" | cut -d'|' -f1,2; exit 1; }
 IFS='|' read -r ROLE ID HF_REPO GEN_CLI EDIT_CLI BASE_ARG DEF_STEPS <<< "$ROW"
 
 MODEL_DIR="$WEIGHTS_ROOT/$(basename "$HF_REPO")"
-[[ -d "$MODEL_DIR" ]] || { echo "ERROR: 权重缺失 $MODEL_DIR — 先跑: lm pull-image $HF_REPO"; exit 1; }
+[[ -d "$MODEL_DIR" ]] || { echo "ERROR: weights missing at $MODEL_DIR — run: lm pull-image $HF_REPO"; exit 1; }
 
 STEPS="${STEPS:-$DEF_STEPS}"
 WIDTH="${SIZE%x*}"; HEIGHT="${SIZE#*x}"
@@ -62,8 +63,8 @@ fi
 
 CMD=()
 if [[ -n "$EDIT_IN" ]]; then
-  [[ -n "$EDIT_CLI" ]] || { echo "ERROR: 模型 $ID 不支持改图（EDIT_CLI 为空，用 flux2-klein-4b）"; exit 1; }
-  [[ -f "$EDIT_IN" ]] || { echo "ERROR: 底图不存在: $EDIT_IN"; exit 1; }
+  [[ -n "$EDIT_CLI" ]] || { echo "ERROR: model $ID does not support editing (EDIT_CLI empty; use flux2-klein-4b)"; exit 1; }
+  [[ -f "$EDIT_IN" ]] || { echo "ERROR: input image not found: $EDIT_IN"; exit 1; }
   CMD=("$EDIT_CLI" --model "$MODEL_DIR" --image-path "$EDIT_IN")
 else
   CMD=("$GEN_CLI" --model "$MODEL_DIR")
@@ -72,7 +73,7 @@ fi
 CMD+=(--prompt "$PROMPT" --width "$WIDTH" --height "$HEIGHT" --steps "$STEPS" --output "$OUT")
 [[ -n "$SEED" ]] && CMD+=(--seed "$SEED")
 
-command -v "${CMD[0]}" >/dev/null 2>&1 || { echo "ERROR: 未安装 mflux — uv tool install mflux"; exit 1; }
+command -v "${CMD[0]}" >/dev/null 2>&1 || { echo "ERROR: mflux not installed — uv tool install mflux"; exit 1; }
 echo ">>> [$ID] ${WIDTH}x${HEIGHT} steps=$STEPS ${EDIT_IN:+edit=$EDIT_IN }-> $OUT"
 "${CMD[@]}"
 echo "DONE: $OUT"

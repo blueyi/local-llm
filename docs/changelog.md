@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-07-22（v2.4.1：代码/脚本/配置全英文化）
+
+- `bin/lm` + `scripts/*.sh` + `config/*.manifest` + `config/defaults.env.example` + `integrations/*/README.md`：注释、帮助文本、日志输出全部改为英文（规则：代码内容一律英文；docs/ 仍为中文文档）。
+- 顺带修复：`import-all-gguf.sh` 中两处指向已删除 `docs/manual-download.md` 的引用 → `docs/install.md`；清除 `config/.DS_Store`。
+- 验证：`bash -n` 全过；`lm check` 三档 ✓；`lm test fast` 77.8 tok/s；`lm image` 出图 ✓；CJK 扫描 bin/scripts/config/integrations 零残留。
+
 ## 2026-07-22（v2.4：统一 CLI 入口 lm + 仓库重组）
 
 **动机**：用法分散在 9 个脚本 + 10 份文档中，无统一入口；文生图模型无 SSOT。
