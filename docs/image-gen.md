@@ -63,6 +63,17 @@ mflux-generate-flux2-edit --model ~/Downloads/image-gen-models/FLUX.2-klein-4B-m
 2. `mas install` 需要 sudo 密码，Agent 无人值守装不了 App Store 应用。
 3. 模型目录必须保持 HF 仓库的子目录结构（`transformer/ text_encoder/ tokenizer/ vae/` + 各自 index.json），缺 tokenizer 会报 `Failed to download tokenizer files`。
 
+## Hermes 集成（image_generate 工具走本地 mflux）
+
+Hermes 的 `image_generate` 工具已切到本地后端（2026-07-22）：
+
+- **User plugin**：`~/.hermes/plugins/image_gen/mflux/`（`plugin.yaml` kind=backend + `__init__.py` 实现 `ImageGenProvider` ABC，subprocess 包装 mflux CLI）
+- **config.yaml**：`plugins.enabled` 含 `image_gen/mflux`；`image_gen.provider: mflux`；`image_gen.model: flux2-klein-4b`
+- 生成文件落 `~/.hermes/cache/images/mflux_*.png`；支持 text-to-image + 图生图编辑（image_url → flux2-edit）
+- 切换模型：`image_gen.model` 改 `z-image-turbo`（写实向，纯 T2I）
+- 切回云端 FAL：`image_gen.provider` 改回 `fal` 并设 `FAL_KEY`
+- 验证：provider registry 注册 ✓、`_handle_image_generate` 端到端 ✓、Hermes 会话内实际出图 ✓
+
 ## 观察名单
 
 | 模型 | 理由 |

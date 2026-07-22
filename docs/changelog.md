@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-07-22（Hermes image_generate 接入本地 mflux）
+
+- 新增 user plugin `~/.hermes/plugins/image_gen/mflux/`：实现 `ImageGenProvider` ABC，subprocess 包装 `mflux-generate-flux2`（+ `flux2-edit` 图生图）与 `mflux-generate-z-image-turbo`
+- config.yaml：`plugins.enabled += image_gen/mflux`，`image_gen.provider: mflux`，`image_gen.model: flux2-klein-4b`（原 FAL 云端配置被本地取代，随时可切回）
+- 验证链路 3 层全过：registry 注册（6 provider 中 active=mflux）→ `_handle_image_generate` 端到端 → Hermes 会话内 `image_generate` 实际出图 + 识图确认
+- 输出落 `~/.hermes/cache/images/mflux_*.png`；aspect_ratio 映射 landscape=1024×576 / square=768² / portrait=576×1024
+- 改前备份 `~/.hermes/config.yaml.bak-20260722-*`
+
 ## 2026-07-22（MLX 版对比实测 → 不换，main 档维持 GGUF）
 
 `qwen3.6:35b-mlx`（21GB, nvfp4）vs `qwen3.6:35b-a3b-q4_K_M`（GGUF），冷加载 + 3 场景 + 8K 长 prompt：

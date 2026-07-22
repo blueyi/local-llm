@@ -1,0 +1,5 @@
+name: mflux
+version: 1.0.0
+description: "Local image generation on Apple Silicon via mflux (MLX) — FLUX.2 Klein 4B + Z-Image-Turbo, no API key, runs fully offline."
+author: Kitty (Leon's local setup)
+kind: backend
