@@ -9,7 +9,7 @@
 set -euo pipefail
 
 REPO="${1:?usage: pull-image-model.sh <hf-repo> [dest-root]}"
-DEST_ROOT="${2:-$HOME/Downloads/image-gen-models}"
+DEST_ROOT="${2:-$HOME/models/image-gen}"
 MIRROR="${HF_MIRROR:-https://hf-mirror.com}"
 DEST="$DEST_ROOT/$(basename "$REPO")"
 mkdir -p "$DEST"

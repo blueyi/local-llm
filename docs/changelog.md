@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-07-22（v2.3：权重统一目录 ~/models/）
+
+所有本地模型权重收拢到统一根目录 `~/models/`，三个子目录：
+
+| 子目录 | 内容 | 大小 | 接入方式 |
+|--------|------|------|----------|
+| `~/models/ollama/` | Ollama 三档权重（原 `~/.ollama/models`） | 56GB | `~/.ollama/models` → symlink（停服务后 mv+ln，重启验证 3 模型完好） |
+| `~/models/image-gen/` | FLUX.2 Klein 4B + Z-Image-Turbo（原 `~/Downloads/image-gen-models/`） | 9.8GB | mflux `--model` 直接路径；Hermes 插件 `DEFAULT_MODELS_DIR` 已改 |
+| `~/models/gguf/` | 手动 GGUF 落盘（原 `~/Downloads/llm-gguf/`，当前为空） | 0 | `deploy.sh` 的 `LLM_GGUF_DIR` 默认值已改；`~/.lmstudio/models/llm-gguf` symlink 已重指 |
+
+同步修改：`scripts/{deploy,pull-image-model,import-gguf,import-all-gguf,link-lmstudio-models}.sh` 默认路径、`AGENTS.md` 路径约定表、`docs/{image-gen,manual-download,models-registry,operations}.md`、`README.md`、Hermes 插件 `~/.hermes/plugins/image_gen/mflux/__init__.py`（+ integrations 备份同步）。历史 changelog 条目保留旧路径不改写。
+
 ## 2026-07-22（Hermes image_generate 接入本地 mflux）
 
 - 新增 user plugin `~/.hermes/plugins/image_gen/mflux/`：实现 `ImageGenProvider` ABC，subprocess 包装 `mflux-generate-flux2`（+ `flux2-edit` 图生图）与 `mflux-generate-z-image-turbo`

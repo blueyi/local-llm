@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Import all known-named GGUFs from ~/Downloads/llm-gguf (or $1) into Ollama.
+# Import all known-named GGUFs from ~/models/gguf (or $1) into Ollama.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-DIR="${1:-$HOME/Downloads/llm-gguf}"
+DIR="${1:-$HOME/models/gguf}"
 IMPORT="$ROOT/scripts/import-gguf.sh"
 
 if [[ ! -d "$DIR" ]]; then

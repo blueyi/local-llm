@@ -22,7 +22,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MANIFEST="$ROOT/config/models.manifest"
-GGUF_DIR="${LLM_GGUF_DIR:-$HOME/Downloads/llm-gguf}"
+GGUF_DIR="${LLM_GGUF_DIR:-$HOME/models/gguf}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 IMPORT="$ROOT/scripts/import-gguf.sh"
 

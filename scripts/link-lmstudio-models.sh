@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Symlink GGUFs into LM Studio models folder for easy discovery.
 set -euo pipefail
-SRC="${1:-$HOME/Downloads/llm-gguf}"
+SRC="${1:-$HOME/models/gguf}"
 # Common LM Studio model roots
 CANDIDATES=(
   "$HOME/.lmstudio/models"

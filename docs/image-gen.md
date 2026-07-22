@@ -21,9 +21,9 @@ uv tool install mflux        # 32 个 CLI 入口（mflux-generate-flux2 等）
 权重（本机 huggingface.co 直连不通 → hf-mirror.com 下载到本地目录）：
 
 ```bash
-# 存放地：~/Downloads/image-gen-models/（不在本仓库，遵守"权重不进仓库"规则）
-~/Downloads/image-gen-models/FLUX.2-klein-4B-mflux-4bit/   # 4.3GB
-~/Downloads/image-gen-models/Z-Image-Turbo-mflux-4bit/     # 5.9GB
+# 存放地：~/models/image-gen/（不在本仓库，遵守"权重不进仓库"规则）
+~/models/image-gen/FLUX.2-klein-4B-mflux-4bit/   # 4.3GB
+~/models/image-gen/Z-Image-Turbo-mflux-4bit/     # 5.9GB
 ```
 
 重下（任一文件损坏时）：`scripts/pull-image-model.sh`（见下）。
@@ -33,7 +33,7 @@ uv tool install mflux        # 32 个 CLI 入口（mflux-generate-flux2 等）
 ```bash
 # 主力：FLUX.2 Klein 4B，4 步即可出好图
 mflux-generate-flux2 \
-  --model ~/Downloads/image-gen-models/FLUX.2-klein-4B-mflux-4bit \
+  --model ~/models/image-gen/FLUX.2-klein-4B-mflux-4bit \
   --base-model flux2-klein-4b \
   --prompt "A cute orange kitten wearing tiny glasses" \
   --width 768 --height 768 --steps 4 --seed 42 \
@@ -41,11 +41,11 @@ mflux-generate-flux2 \
 
 # 备选：Z-Image-Turbo（写实向，9 步）
 mflux-generate-z-image-turbo \
-  --model ~/Downloads/image-gen-models/Z-Image-Turbo-mflux-4bit \
+  --model ~/models/image-gen/Z-Image-Turbo-mflux-4bit \
   --prompt "..." --width 1024 --height 768 --steps 9 --output out.png
 
 # 图生图/编辑（FLUX.2 原生支持）
-mflux-generate-flux2-edit --model ~/Downloads/image-gen-models/FLUX.2-klein-4B-mflux-4bit \
+mflux-generate-flux2-edit --model ~/models/image-gen/FLUX.2-klein-4B-mflux-4bit \
   --base-model flux2-klein-4b --image-path in.png --prompt "make it watercolor" --output out.png
 ```
 

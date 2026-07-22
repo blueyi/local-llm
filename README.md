@@ -2,7 +2,7 @@
 
 本机 Apple Silicon 本地 LLM 知识库：选型、安装、三档模型、Agent 对接与运维。
 
-**不要**把权重放进本目录；权重由 Ollama / LM Studio 管理。
+**不要**把权重放进本目录；所有权重统一在 `~/models/`（ollama/ gguf/ image-gen/）。
 
 ## 目录地图
 

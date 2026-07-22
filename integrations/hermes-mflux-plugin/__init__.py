@@ -3,7 +3,7 @@
 Wraps the ``mflux-generate-*`` CLIs installed by ``uv tool install mflux``
 as an :class:`ImageGenProvider`. Fully local & free — no API key.
 
-Models (weights pre-downloaded to ``~/Downloads/image-gen-models/``,
+Models (weights pre-downloaded to ``~/models/image-gen/``,
 see ~/workspace/local-llm/docs/image-gen.md):
 
 - ``flux2-klein-4b`` — FLUX.2 Klein 4B 4bit, 4 steps, ~3s/768px on M5 Max.
@@ -18,7 +18,7 @@ Selection precedence:
 
 Config keys (all optional, under ``image_gen.mflux``):
     model:       flux2-klein-4b | z-image-turbo
-    models_dir:  weights root (default ~/Downloads/image-gen-models)
+    models_dir:  weights root (default ~/models/image-gen)
     steps:       override sampling steps
 """
 
@@ -43,7 +43,7 @@ from agent.image_gen_provider import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODELS_DIR = Path.home() / "Downloads" / "image-gen-models"
+DEFAULT_MODELS_DIR = Path.home() / "models" / "image-gen"
 
 # Hermes abstract aspect ratios → (width, height). Multiples of 16.
 _ASPECT_SIZES = {
@@ -195,7 +195,7 @@ class MfluxImageGenProvider(ImageGenProvider):
             "tag": (
                 "Fully local image gen on Apple Silicon — FLUX.2 Klein 4B "
                 "(~3s/image) + Z-Image-Turbo. No API key. Weights in "
-                "~/Downloads/image-gen-models/."
+                "~/models/image-gen/."
             ),
             "env_vars": [],
         }

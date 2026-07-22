@@ -19,8 +19,8 @@ ollama ps                    # 当前已加载模型
 
 ## 磁盘
 
-- 权重在 `~/.ollama` / LM Studio 目录，**不要**放进本仓库
-- 三档齐备约 80–100 GB；用 `du -sh ~/.ollama` 检查
+- 权重统一在 `~/models/`（ollama/ gguf/ image-gen/），**不要**放进本仓库；`~/.ollama/models` 是 symlink
+- 三档齐备约 80–100 GB；用 `du -sh ~/models` 检查
 
 ## 故障排查
 

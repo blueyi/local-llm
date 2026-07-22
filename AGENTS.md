@@ -32,12 +32,15 @@
 
 ## 路径约定
 
+**所有本地模型权重统一收在 `~/models/` 下**（2026-07-22 起，v2.3）：
+
 | 内容 | 路径 |
 |------|------|
 | 本方案知识库 | `~/workspace/local-llm` |
-| Ollama 权重 | `~/.ollama/` |
-| LM Studio 权重 | 见应用设置（常见 `~/.lmstudio/models`） |
-| 文生图权重（mflux） | `~/Downloads/image-gen-models/` |
+| **权重统一根目录** | `~/models/` |
+| Ollama 权重 | `~/models/ollama/`（`~/.ollama/models` 是指向它的 symlink，勿删） |
+| 手动 GGUF（含 LM Studio 共享） | `~/models/gguf/`（`~/.lmstudio/models/llm-gguf` symlink 指向它） |
+| 文生图权重（mflux） | `~/models/image-gen/` |
 
 用户提到「本地大模型 / Ollama / 换模型」时：先 `move_agent_to_root` 到本目录再改。
 
@@ -50,7 +53,7 @@
 ./scripts/deploy.sh --prune   # 部署并清理 retired 模型
 ./scripts/status.sh
 ./scripts/sync-registry.sh
-./scripts/import-gguf.sh <name> ~/Downloads/llm-gguf/xxx.gguf
+./scripts/import-gguf.sh <name> ~/models/gguf/xxx.gguf
 ./scripts/pull-image-model.sh <hf-repo>   # 文生图模型下载（hf-mirror 直拉）
 ```
 

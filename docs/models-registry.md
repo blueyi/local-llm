@@ -1,6 +1,6 @@
 # 模型登记（活文档）
 
-权重在 `~/.ollama/`（或 LM Studio 目录）；此处只登记元数据。
+权重统一在 `~/models/`（ollama/ gguf/ image-gen/ 三个子目录）；此处只登记元数据。
 
 更新：`./scripts/sync-registry.sh` 或手动编辑。
 
@@ -61,7 +61,7 @@ qwen3.6:35b-a3b-q4_K_M    07d35212591f    23 GB     16 hours ago
 ## 导入脚本
 
 ```bash
-./scripts/import-gguf.sh <name> ~/Downloads/llm-gguf/xxx.gguf
+./scripts/import-gguf.sh <name> ~/models/gguf/xxx.gguf
 ./scripts/import-all-gguf.sh
 ./scripts/link-lmstudio-models.sh
 ```

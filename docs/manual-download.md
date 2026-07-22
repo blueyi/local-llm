@@ -7,7 +7,7 @@ Ollama 官方源较慢时，用下载工具从 Hugging Face 拉 **GGUF**，再�
 **建议存放目录（权重，勿放进本仓库 git）：**
 
 ```text
-~/Downloads/llm-gguf/
+~/models/gguf/
 ```
 
 ---
@@ -51,7 +51,7 @@ https://huggingface.co/bartowski/Qwen_Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen_Qwe
 mkdir -p ~/workspace/local-llm/config/Modelfiles
 # 示例：B 档全能主力
 cat > ~/workspace/local-llm/config/Modelfiles/qwen36-b-q4 << 'EOF'
-FROM /Users/yulong/Downloads/llm-gguf/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf
+FROM /Users/yulong/models/gguf/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf
 PARAMETER num_ctx 32768
 EOF
 
