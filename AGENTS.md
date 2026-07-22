@@ -13,7 +13,7 @@
 3. `docs/tiers.md` — 三档选型与切换
 4. `docs/models-registry.md` — 已装模型活文档
 
-按需再读：`docs/hardware.md`、`docs/stack.md`、`docs/agent-integration.md`、`docs/operations.md`。
+按需再读：`docs/environment.md`（硬件+运行时）、`docs/agent-integration.md`、`docs/image-gen.md`、`docs/operations.md`。
 
 ## 必须同步更新
 
@@ -22,7 +22,8 @@
 - 更新 `docs/models-registry.md`
 - 追加 `docs/changelog.md`
 - 若档位或默认场景变了：改 `docs/tiers.md` 和/或 `docs/agent-integration.md`
-- 运行时版本变了：改 `docs/stack.md`
+- 运行时版本变了：改 `docs/environment.md`
+- 文生图模型变了：改 `config/image-models.manifest` + `docs/image-gen.md`
 
 ## 禁止
 
@@ -44,22 +45,22 @@
 
 用户提到「本地大模型 / Ollama / 换模型」时：先 `move_agent_to_root` 到本目录再改。
 
-## 快捷脚本
+## 统一入口 lm（唯一操作方式）
 
 ```bash
-./scripts/deploy.sh --check   # 体检+对账
-./scripts/deploy.sh           # 一键部署（读 config/models.manifest，断点续传）
-./scripts/deploy.sh main      # 只装某一档 (main=日常 deep=难题 fast=速度)
-./scripts/deploy.sh --prune   # 部署并清理 retired 模型
-./scripts/status.sh
-./scripts/sync-registry.sh
-./scripts/import-gguf.sh <name> ~/models/gguf/xxx.gguf
-./scripts/pull-image-model.sh <hf-repo>   # 文生图模型下载（hf-mirror 直拉）
+lm status / check                 # 总览 / 体检+对账
+lm deploy [main|deep|fast]        # 一键部署（读 config/models.manifest，断点续传；--prune 清 retired）
+lm run [tier] / lm test [tier]    # 聊天 / 冒烟+tok/s
+lm image "prompt"                 # 文生图（--model --size --steps --seed --edit）
+lm pull-image <hf-repo>           # 文生图权重下载（hf-mirror 直拉）
+lm import <name> <gguf> [ctx]     # 手动 GGUF 导入
+lm sync                           # registry 回写
 ```
+
+`lm` = `bin/lm`（symlink 在 `~/.local/bin/lm`），子命令分发到 `scripts/`；**不要直接调 scripts/**（除非调试脚本本身）。
 
 ## 模型清单 SSOT
 
-**`config/models.manifest` 是唯一模型清单**（档位、tag、ctx、GGUF 回退直链）。
-升级模型 = 改 manifest → `./scripts/deploy.sh`。
+**`config/models.manifest`（LLM）+ `config/image-models.manifest`（文生图）是唯二模型清单**。
+升级 LLM = 改 models.manifest → `lm deploy`；升级文生图 = 改 image-models.manifest → `lm pull-image`。
 其他文档（tiers.md / registry / defaults.env）只做说明，**不要在脚本里硬编码模型名**。
-`pull-tier.sh` 已由 deploy.sh 取代（保留兼容）。

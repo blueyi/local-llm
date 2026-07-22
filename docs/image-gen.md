@@ -26,9 +26,22 @@ uv tool install mflux        # 32 个 CLI 入口（mflux-generate-flux2 等）
 ~/models/image-gen/Z-Image-Turbo-mflux-4bit/     # 5.9GB
 ```
 
-重下（任一文件损坏时）：`scripts/pull-image-model.sh`（见下）。
+重下（任一文件损坏时）：`lm pull-image <hf-repo>`。
 
-## 出图
+**模型清单 SSOT：`config/image-models.manifest`**（与 LLM 的 `models.manifest` 平行；换/升级文生图模型只改它）。
+
+## 出图（首选：统一入口 lm image）
+
+```bash
+lm image "A cute orange kitten wearing tiny glasses"          # primary(Klein) 768²
+lm image --model z-image-turbo "portrait photo, golden hour"  # 写实向备选
+lm image --size 1024x576 --steps 6 --seed 42 "..."            # 精细控制
+lm image --edit in.png "make the sky sunset orange" out.png   # 图生图/改图（仅 Klein）
+```
+
+默认输出 `~/Pictures/gen/<timestamp>-<model>.png`；`--out` 指定路径。参数细节 `lm image --help`。
+
+## 出图（底层 mflux CLI，脚本化/全参数）
 
 ```bash
 # 主力：FLUX.2 Klein 4B，4 步即可出好图

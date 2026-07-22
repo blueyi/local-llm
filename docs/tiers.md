@@ -22,7 +22,7 @@
 | 补全、草稿、快问快答、快速扫图 | fast | `qwen3.5:9b` |
 
 ```bash
-./scripts/deploy.sh --check
+lm check
 ollama run qwen3.6:35b-a3b-q4_K_M
 ```
 

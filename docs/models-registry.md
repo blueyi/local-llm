@@ -2,7 +2,7 @@
 
 权重统一在 `~/models/`（ollama/ gguf/ image-gen/ 三个子目录）；此处只登记元数据。
 
-更新：`./scripts/sync-registry.sh` 或手动编辑。
+更新：`lm sync` 或手动编辑。
 
 ## 目标清单（按档，2026-07-22 方案 v2.1：main/deep/fast）
 
@@ -51,19 +51,19 @@
 
 <!-- BEGIN OLLAMA LIST -->
 ```
-NAME                      ID              SIZE      MODIFIED          
-qwen3.5:9b                6488c96fa5fa    6.6 GB    About an hour ago    
-qwen3.6:27b-q8_0          cd0210c667bf    29 GB     About an hour ago    
-qwen3.6:35b-a3b-q4_K_M    07d35212591f    23 GB     16 hours ago         
+NAME                      ID              SIZE      MODIFIED     
+qwen3.5:9b                6488c96fa5fa    6.6 GB    22 hours ago    
+qwen3.6:27b-q8_0          cd0210c667bf    29 GB     22 hours ago    
+qwen3.6:35b-a3b-q4_K_M    07d35212591f    23 GB     37 hours ago    
 ```
 <!-- END OLLAMA LIST -->
 
 ## 导入脚本
 
 ```bash
-./scripts/import-gguf.sh <name> ~/models/gguf/xxx.gguf
+lm import <name> ~/models/gguf/xxx.gguf
 ./scripts/import-all-gguf.sh
 ./scripts/link-lmstudio-models.sh
 ```
 
-手动直链见 [manual-download.md](./manual-download.md)。
+手动直链见 [install.md](./install.md)（手动 GGUF 回退章节）。

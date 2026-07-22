@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-07-22（v2.4：统一 CLI 入口 lm + 仓库重组）
+
+**动机**：用法分散在 9 个脚本 + 10 份文档中，无统一入口；文生图模型无 SSOT。
+
+- **新增 `bin/lm` 统一 CLI**（symlink → `~/.local/bin/lm`）：status / run / test / image / check / deploy / pull-image / import / sync 九个子命令，分发到 scripts/。scripts/ 降级为实现细节，不再直接调用。
+- **新增 `config/image-models.manifest`**：文生图模型 SSOT（role|id|hf_repo|gen_cli|edit_cli|base_arg|steps），与 LLM manifest 平行；`scripts/gen-image.sh` 读它统一包装出图/改图。
+- **`lm image` 实测**：Klein 512² 4 步 ~1s 生成、z-image-turbo ✓、`--edit` 改图 ✓、缺权重时提示 `lm pull-image` ✓。
+- **docs 10→8 份**：`hardware.md`+`stack.md` → `environment.md`；`manual-download.md` 并入 `install.md`（安装+回退一处看完）。
+- **删除**：`scripts/pull-tier.sh`（deploy.sh 已带 a/b/c 兼容映射）、`.tmp/` 垃圾。
+- **`lm status` 增强**：显示 `~/models` 权重目录 + symlink 健康检查 + 文生图权重对账。
+- **`lm test`（smoke-test.sh）重写**：走 API 报 tok/s（原来 `ollama run` 无速度数据）；支持档位名（`lm test fast`）。
+- README 重写为完整工程门面：目录结构、lm 全命令、三档表、文生图表、Agent 对接矩阵、设计原则。
+
 ## 2026-07-22（v2.3：权重统一目录 ~/models/）
 
 所有本地模型权重收拢到统一根目录 `~/models/`，三个子目录：

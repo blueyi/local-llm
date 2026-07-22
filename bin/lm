@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# =============================================================
+# lm — 本地大模型方案统一入口（local-llm CLI）
+# =============================================================
+# 一切本地模型操作从这里走。子命令分发到 scripts/。
+#
+# 用法: lm <command> [args...]
+#
+# 【日常】
+#   lm status                     # 总览: 模型/权重目录/内存/磁盘
+#   lm run [main|deep|fast]       # 交互聊天 (默认 main; 也可直接给 ollama tag)
+#   lm test [tag] [prompt]        # 冒烟测试 + tok/s
+#   lm image "prompt"             # 文生图 (--model/--size/--steps/--seed/--edit, 见 lm image --help)
+#
+# 【部署 / 升级】
+#   lm check                      # 体检 + manifest 对账 (不安装)
+#   lm deploy [main|deep|fast]    # 按 manifest 部署 LLM (--prune 清理 retired, --gguf 强制手动)
+#   lm pull-image <hf-repo>       # 下载文生图权重 (hf-mirror 直拉到 ~/models/image-gen)
+#
+# 【维护】
+#   lm import <name> <gguf> [ctx] # 手动导入单个 GGUF 到 Ollama
+#   lm sync                       # 把 ollama list 回写 docs/models-registry.md
+#   lm help                       # 本帮助
+#
+# 模型清单 SSOT: config/models.manifest (LLM) + config/image-models.manifest (文生图)
+# 权重统一目录: ~/models/{ollama,gguf,image-gen}
+# =============================================================
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")/.." && pwd)"
+S="$ROOT/scripts"
+
+usage() { grep -E '^#( |=)' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
+
+CMD="${1:-help}"; shift || true
+case "$CMD" in
+  status)      exec "$S/status.sh" "$@" ;;
+  run)
+    TAG="${1:-main}"
+    # 档位名 → manifest 里的 tag；否则原样透传给 ollama
+    if grep -qE "^$TAG\|" "$ROOT/config/models.manifest" 2>/dev/null; then
+      TAG="$(grep -E "^$TAG\|" "$ROOT/config/models.manifest" | head -1 | cut -d'|' -f2)"
+    fi
+    exec ollama run "$TAG" ;;
+  test)        exec "$S/smoke-test.sh" "$@" ;;
+  image)       exec "$S/gen-image.sh" "$@" ;;
+  check)       exec "$S/deploy.sh" --check "$@" ;;
+  deploy)      exec "$S/deploy.sh" "$@" ;;
+  pull-image)  exec "$S/pull-image-model.sh" "$@" ;;
+  import)      exec "$S/import-gguf.sh" "$@" ;;
+  sync)        exec "$S/sync-registry.sh" "$@" ;;
+  help|-h|--help) usage ;;
+  *) echo "未知命令: $CMD"; echo; usage; exit 1 ;;
+esac

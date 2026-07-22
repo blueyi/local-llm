@@ -3,8 +3,8 @@
 ## 日常
 
 ```bash
-./scripts/status.sh          # 版本、已装模型、磁盘提示
-./scripts/sync-registry.sh   # 刷新 models-registry 中 Ollama 列表
+lm status                    # 总览：权重/模型/磁盘
+lm sync                      # 刷新 models-registry 中 Ollama 列表
 ollama ps                    # 当前已加载模型
 ```
 

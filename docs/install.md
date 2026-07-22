@@ -1,43 +1,63 @@
-# 安装步骤（可复现）
+# 安装与手动下载（可复现）
 
-## 1. 本知识库
+标准路径三步装完；网络不好时走「手动 GGUF」回退（本文后半）。
 
-```bash
-# 已定路径
-cd ~/workspace/local-llm
-```
-
-## 2. Ollama
+## 标准路径
 
 ```bash
-brew install ollama
-# 或：https://ollama.com/download
-ollama --version   # 建议 ≥ 0.19（Apple Silicon MLX）
+# 1. 引擎
+brew install ollama && brew services start ollama
+uv tool install mflux                # 文生图（可选）
+
+# 2. 统一入口上 PATH（一次性）
+ln -sfn ~/workspace/local-llm/bin/lm ~/.local/bin/lm
+
+# 3. 按 manifest 部署
+lm deploy            # 全部三档 LLM（断点续传，可重入）
+lm pull-image Runpod/FLUX.2-klein-4B-mflux-4bit      # 文生图主力
+lm pull-image filipstrand/Z-Image-Turbo-mflux-4bit   # 备选（写实向）
+
+# 4. 验证
+lm check && lm test fast && lm image "hello world test"
 ```
 
-服务一般会自动启动；也可手动：
+LM Studio（可选 GUI）：https://lmstudio.ai 下载，引擎选 **MLX**；`~/.lmstudio/models/llm-gguf` 已 symlink 到 `~/models/gguf/`。
+
+安装后回写：`lm sync`（registry）+ `docs/changelog.md` 记一笔；版本变化改 `docs/environment.md`。
+
+---
+
+## 手动 GGUF 回退（`ollama pull` 不通时）
+
+> 国内直连 `huggingface.co` 常不通 → 域名替换为 **`hf-mirror.com`**。`lm deploy` 失败时自动走此路径；下面是全手动流程。
+
+**存放目录：`~/models/gguf/`**（勿放进本仓库 git）
+
+### 直链清单（manifest 同源，2026-07 方案 v2.1）
+
+| 档位 | 主模型直链 | 视觉 mmproj |
+|------|-----------|-------------|
+| main | https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf | 同仓库 mmproj-F16.gguf |
+| deep | https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/Qwen3.6-27B-Q8_0.gguf | 同仓库 mmproj-F16.gguf |
+| fast | https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf | 同仓库 mmproj-F16.gguf |
+
+备用发布者：bartowski（同内容），如 `https://huggingface.co/bartowski/Qwen_Qwen3.6-35B-A3B-GGUF/...`。
+断点续传坑（302 → CDN Range 探测）已封装在 `lm deploy` 内，手动 curl 见 `scripts/deploy.sh` 的 `download_gguf()` 注释。
+
+### 导入
 
 ```bash
-ollama serve
+lm import qwen3.6-b-q4 ~/models/gguf/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf 65536
+lm run qwen3.6-b-q4
 ```
 
-按档拉取：
+- `ollama create` 会把权重复制进 `~/models/ollama/`，导入完成后 `~/models/gguf/` 里的副本可删（或留作备份）。
+- **mmproj 说明**：官方 `ollama pull` 的 tag 已内置视觉，无需额外文件；仅手动 GGUF 导入需要同仓库 `mmproj-*.gguf`（LM Studio 同目录放齐；Ollama Modelfile 双 FROM，以当前文档为准）。
+- 手动导入的本地名（如 `qwen3.6-b-q4`）与官方 tag 不同，功能等价即可；Cursor 模型名填 `create` 时的名字。
+
+### 导入后回写
 
 ```bash
-./scripts/pull-tier.sh b   # 平衡（默认先装）
-./scripts/pull-tier.sh a   # 高质量（体积大）
-./scripts/pull-tier.sh c   # 速度
+lm sync    # ollama list 回写 docs/models-registry.md
+# 手动追加 docs/changelog.md；Cursor 默认模型变了 → 改 docs/agent-integration.md
 ```
-
-## 3. LM Studio
-
-1. 安装：https://lmstudio.ai （macOS Apple Silicon）
-2. 设置中选择 **MLX** 引擎
-3. 下载 VL：`Qwen3-VL-30B-A3B` 4-bit（B）；需要时再下 6-bit（A）与小杯 VL（C）
-4. 可选：开启 Local Server（OpenAI 兼容）
-
-## 4. 安装后回写
-
-- `docs/stack.md` — 版本号
-- `docs/models-registry.md` — 已装清单（或跑 `./scripts/sync-registry.sh`）
-- `docs/changelog.md` — 记一笔
