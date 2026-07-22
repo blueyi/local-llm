@@ -14,7 +14,7 @@
 
 ## 统一入口：`lm`
 
-一切操作从 `lm` 走（`bin/lm`，已 symlink 到 `~/.local/bin/lm`）：
+一切操作从 `lm` 走（`bin/lm`，由 my-utils `config/resetrc.bash` 加入 PATH）：
 
 ```bash
 # —— 日常 ——

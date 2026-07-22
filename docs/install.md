@@ -10,7 +10,8 @@ brew install ollama && brew services start ollama
 uv tool install mflux                # 文生图（可选）
 
 # 2. 统一入口上 PATH（一次性）
-ln -sfn ~/workspace/local-llm/bin/lm ~/.local/bin/lm
+# PATH via my-utils (config/resetrc.bash prepends ~/workspace/local-llm/bin)
+# Without my-utils: ln -sfn ~/workspace/local-llm/bin/lm ~/.local/bin/lm
 
 # 3. 按 manifest 部署
 lm deploy            # 全部三档 LLM（断点续传，可重入）

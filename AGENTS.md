@@ -57,7 +57,7 @@ lm import <name> <gguf> [ctx]     # 手动 GGUF 导入
 lm sync                           # registry 回写
 ```
 
-`lm` = `bin/lm`（symlink 在 `~/.local/bin/lm`），子命令分发到 `scripts/`；**不要直接调 scripts/**（除非调试脚本本身）。
+`lm` = `bin/lm`（PATH 由 my-utils resetrc.bash 提供），子命令分发到 `scripts/`；**不要直接调 scripts/**（除非调试脚本本身）。
 
 ## 模型清单 SSOT
 
