@@ -51,7 +51,8 @@
 
 ```bash
 lm status / check                 # 总览 / 体检+对账
-lm deploy [tier] [--force]        # 部署（缺则拉；--force 已装也重拉）
+lm deploy [tier] [--force] [--yes] [--skip-ollama-upgrade]
+                                      # 部署（缺则拉；先检查 Ollama 是否最新并提示升级）
 lm update                         # 远程目录+硬件推荐三档 → 确认后写 manifest 并 deploy
 lm get <query>                    # 模糊搜索远程模型 → 交互选择 → pull（--tier …）
 lm run [tier] / lm test [tier]    # 聊天 / 冒烟（含 embed|chat|reason|rerank|asr|tts）
@@ -61,6 +62,7 @@ lm pull-image <hf-repo>           # 文生图权重
 lm pull-speech [hf-repo]          # ASR 权重（hf-mirror → ~/models/speech）
 lm pull-tts [hf-repo]             # TTS 权重（hf-mirror → ~/models/tts）
 lm pull-gguf [tier...]            # 清单内 HF GGUF → ~/models/gguf（给 LM Studio）
+lm upgrade-ollama [--yes]         # 检查/升级 Ollama 到 GitHub latest（darwin）
 lm rm <name|tier> [--yes]         # 卸载 Ollama 模型（确认提示；等同 ollama rm）
 lm import <name> <gguf> [ctx]     # 手动 GGUF 导入 Ollama
 lm sync                           # registry 回写

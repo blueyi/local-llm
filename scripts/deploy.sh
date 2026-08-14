@@ -11,7 +11,12 @@
 #   ./scripts/deploy.sh --check        # health check + reconciliation only, no install
 #   ./scripts/deploy.sh --prune        # deploy, then delete retired models (asks for confirmation)
 #   ./scripts/deploy.sh --force        # re-pull even if already installed
+#   ./scripts/deploy.sh --yes          # auto-upgrade Ollama when outdated (no prompt)
+#   ./scripts/deploy.sh --skip-ollama-upgrade  # skip latest-version check
 #   ./scripts/deploy.sh main --gguf    # force the manual GGUF download path (skip ollama pull)
+#
+# Before install: compare local Ollama to GitHub latest; prompt to upgrade if behind
+# (new models like qwen3.8 often need a newer engine than brew stable).
 #
 # Install strategy (per model):
 #   1) Prefer `ollama pull <tag>`     — native resumable download, simplest
@@ -28,6 +33,7 @@ MANIFEST="$ROOT/config/models.manifest"
 GGUF_DIR="${LLM_GGUF_DIR:-$HOME/models/gguf}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 IMPORT="$ROOT/scripts/import-gguf.sh"
+UPGRADE_OLLAMA="$ROOT/scripts/upgrade-ollama.sh"
 
 # ---- Argument parsing ----
 ONLY_TIER=""
@@ -35,6 +41,8 @@ DO_CHECK=0
 DO_PRUNE=0
 FORCE_PULL=0
 FORCE_GGUF=0
+YES=0
+SKIP_OLLAMA_UPGRADE=0
 for arg in "$@"; do
   case "$arg" in
     main|deep|fast|embed|chat|reason|rerank) ONLY_TIER="$arg" ;;
@@ -45,6 +53,8 @@ for arg in "$@"; do
     --prune)      DO_PRUNE=1 ;;
     --force)      FORCE_PULL=1 ;;
     --gguf)       FORCE_GGUF=1 ;;
+    --yes|-y)     YES=1 ;;
+    --skip-ollama-upgrade|--no-ollama-upgrade) SKIP_OLLAMA_UPGRADE=1 ;;
     -h|--help)    grep -E '^#( |=)' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *)            echo "Unknown argument: $arg (see --help)"; exit 1 ;;
   esac
@@ -56,6 +66,24 @@ ok()   { printf '\033[1;32m OK %s\033[0m\n' "$*"; }
 err()  { printf '\033[1;31mERR %s\033[0m\n' "$*"; }
 
 [[ -f "$MANIFEST" ]] || { err "manifest not found: $MANIFEST"; exit 1; }
+
+# ---- Ollama runtime: ensure not far behind GitHub latest ----
+ensure_ollama_runtime() {
+  [[ "$SKIP_OLLAMA_UPGRADE" -eq 1 ]] && { warn "skipped Ollama version check (--skip-ollama-upgrade)"; return 0; }
+  [[ -x "$UPGRADE_OLLAMA" ]] || { warn "upgrade-ollama.sh missing — skip runtime check"; return 0; }
+
+  if [[ "$DO_CHECK" -eq 1 ]]; then
+    # Report only; never block lm check
+    "$UPGRADE_OLLAMA" --check-only || true
+    return 0
+  fi
+
+  if [[ "$YES" -eq 1 ]]; then
+    "$UPGRADE_OLLAMA" --yes || warn "Ollama upgrade failed — continuing deploy with current runtime"
+  else
+    "$UPGRADE_OLLAMA" || warn "Ollama upgrade failed — continuing deploy with current runtime"
+  fi
+}
 
 # ---- Environment health check ----
 preflight() {
@@ -199,6 +227,7 @@ reconcile() {
 }
 
 # ================= Main =================
+ensure_ollama_runtime
 preflight
 
 if [[ "$DO_CHECK" -eq 1 ]]; then

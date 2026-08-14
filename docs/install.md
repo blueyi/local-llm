@@ -5,8 +5,9 @@
 ## 标准路径
 
 ```bash
-# 1. 引擎
+# 1. 引擎（qwen3.8 需要 Ollama ≥0.32.12；brew 若仍 0.32.11 见 docs/environment.md）
 brew install ollama && brew services start ollama
+ollama --version   # 确认 ≥0.32.12
 uv tool install mflux                # 文生图（可选）
 
 # 2. 统一入口上 PATH（一次性）

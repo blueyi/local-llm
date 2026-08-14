@@ -19,6 +19,15 @@ lm rm <name> --yes           # 跳过确认（脚本用）
 
 强制重拉已装模型：`lm deploy --force`（或 `lm deploy main --force`）。
 
+`lm deploy` 开始前会对照 GitHub latest 检查 Ollama 版本：落后则提示是否先升级（`Y` 自动装官方 darwin 包到 `/opt/homebrew/opt/ollama-upstream`；`n` 跳过并继续 deploy）。
+
+```bash
+lm deploy --yes                  # 落后时不询问，直接升级 Ollama 再部署
+lm deploy --skip-ollama-upgrade  # 跳过版本检查
+lm upgrade-ollama                # 单独检查/升级运行时
+lm upgrade-ollama --check-only   # 只报告（exit 2=落后）
+```
+
 ## 更新模型
 
 ### 推荐：硬件感知自动更新三档

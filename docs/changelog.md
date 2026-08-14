@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-08-15（`lm deploy` 前自动检查 Ollama 版本）
+
+- 新增 `scripts/upgrade-ollama.sh` / **`lm upgrade-ollama`**：对照 GitHub latest；darwin 自动装到 `/opt/homebrew/opt/ollama-upstream` 并重启 daemon
+- **`lm deploy`** 部署前调用：落后则交互确认（`Y` 升级 / `n` 跳过继续）；`--yes` 自动升级；`--skip-ollama-upgrade` 跳过检查
+- 避免再出现 `qwen3.8` 之类因引擎过旧返回 412 却未先升运行时的问题
+
+## 2026-08-15（运行时：Ollama 0.32.12 for Qwen3.8）
+
+- 库拉取 `qwen3.8` 需 **Ollama ≥0.32.12**（官方 release 当日加入支持）；Homebrew stable 当时仍为 0.32.11 → 412
+- 本机改为官方 `ollama-darwin.tgz` → `/opt/homebrew/opt/ollama-upstream`，LaunchAgent 指向该二进制；`docs/environment.md` 同步
+
 ## 2026-08-15（`lm rm` + `lm deploy --force`）
 
 - 新增 **`lm rm <name|tier> [--yes]`**：封装 `ollama rm`，执行前确认提示；档位名可解析；删后自动 sync registry

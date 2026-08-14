@@ -27,8 +27,10 @@ lm image "a cute kitten"     # 文生图（3~8s 出图，全离线）
 
 # —— 部署 / 升级 ——
 lm check                     # 体检 + manifest 对账（不安装）
-lm deploy                    # 按 manifest 部署（缺则拉，可重入）
+lm deploy                    # 按 manifest 部署（先检查 Ollama 是否最新；缺则拉）
 lm deploy --force            # 已装也强制重拉
+lm deploy --yes              # Ollama 落后时不询问，直接升级再部署
+lm upgrade-ollama            # 单独升级运行时到 GitHub latest
 lm update                    # 远程最新 + 本机硬件 → 推荐三档，确认后更新并 deploy
 lm get <query>               # 模糊搜索远程模型，交互选择后下载（可 --tier 写入清单）
 lm pull-image <hf-repo>      # 下载文生图权重（hf-mirror 直拉）

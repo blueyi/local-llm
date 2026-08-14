@@ -17,7 +17,8 @@
 #
 # [Deploy / Upgrade]
 #   lm check                      # Health check + manifest reconciliation (no install)
-#   lm deploy [tier] [--force]    # Deploy LLMs per manifest; --force re-pulls even if installed
+#   lm deploy [tier] [--force] [--yes] [--skip-ollama-upgrade]
+#                                 # Deploy LLMs; checks Ollama latest first (prompt / --yes auto-upgrade)
 #   lm update                     # Recommend + update 3 tiers from remote catalog + hardware (--dry-run/--yes/--ram/--chip/--no-deploy)
 #   lm get <query>                # Fuzzy-search remote model, interactive pick, pull (--tier/--tag/--yes/--dry-run)
 #   lm pull-image <hf-repo>       # Download image-gen weights (direct pull via hf-mirror to ~/models/image-gen)
@@ -26,6 +27,7 @@
 #   lm pull-gguf [tier...]        # Download manifest HF GGUFs into ~/models/gguf for LM Studio (--link)
 #
 # [Maintenance]
+#   lm upgrade-ollama [--yes]     # Check GitHub latest Ollama; prompt or auto-upgrade (darwin)
 #   lm rm <name|tier> [--yes]     # Remove Ollama model (confirm unless --yes); syncs registry
 #   lm import <name> <gguf> [ctx] # Manually import a single GGUF into Ollama
 #   lm sync                       # Write `ollama list` back into docs/models-registry.md
@@ -63,6 +65,7 @@ case "$CMD" in
   pull-speech) exec "$S/pull-speech-model.sh" "$@" ;;
   pull-tts)    exec "$S/pull-tts-model.sh" "$@" ;;
   pull-gguf)   exec "$S/pull-gguf.sh" "$@" ;;
+  upgrade-ollama) exec "$S/upgrade-ollama.sh" "$@" ;;
   rm)          exec "$S/rm-model.sh" "$@" ;;
   import)      exec "$S/import-gguf.sh" "$@" ;;
   sync)        exec "$S/sync-registry.sh" "$@" ;;
