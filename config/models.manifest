@@ -5,9 +5,10 @@
 # (or: lm deploy)
 #
 # Fields (pipe-separated): TIER|OLLAMA_TAG|NUM_CTX|HF_GGUF_URL|HF_MMPROJ_URL
-#   TIER    : main=daily driver  deep=quality  fast=speed  retired=to delete
-#             (mnemonic: main for everyday work, deep for hard problems,
-#              fast when in a hurry)
+#   TIER    : main=daily agent  deep=quality  fast=speed
+#             embed=RAG embeddings  chat=creative/multilingual assistant
+#             reason=dedicated reasoning  rerank=RAG reranker
+#             retired=to delete
 #   OLLAMA_TAG : official ollama tag (preferred install path, native resume)
 #   NUM_CTX : default context written into the Modelfile for manual GGUF imports
 #   HF_GGUF_URL : GGUF fallback direct link used when ollama pull fails
@@ -16,16 +17,33 @@
 #   HF_MMPROJ_URL : vision projector (only needed for manual imports with
 #                   image input; may be empty)
 #
+# Speech ASR/TTS are NOT here — see speech-models.manifest / tts-models.manifest.
 # Other files (docs/tiers.md, defaults.env, etc.) are documentation only,
 # never an install source. Do not hardcode model names in any script.
 # =============================================================
 
-# ---- Current lineup v2.1 (2026-07-22, Qwen3.6/3.5 native-multimodal, 3 tiers) ----
-main|qwen3.6:35b-a3b-q4_K_M|65536|https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/mmproj-F16.gguf
-deep|qwen3.6:27b-q8_0|32768|https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/Qwen3.6-27B-Q8_0.gguf|https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/mmproj-F16.gguf
+# ---- Core coding/agent tiers (v2.9 — Qwen3.8 lineup, 2026-08-15) ----
+# main/deep: Qwen3.8-27B dense (latest open gen; no 3.8 MoE yet on Ollama)
+# fast: no smaller 3.8 — keep Qwen3.5-9B multimodal draft
+main|qwen3.8:27b-q4_K_M|65536|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
+deep|qwen3.8:27b-q8_0|32768|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q8_0.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
 fast|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
 
+# ---- Category coverage ----
+# embed: upgrade 4b → 8b (still small; better retrieval)
+embed|qwen3-embedding:8b|8192||
+# chat: upgrade gemma4 26b → 31b (stronger creative/multilingual; still ≤20GB)
+chat|gemma4:31b|65536||
+# reason: gpt-oss:20b remains best fit (120b ~65GB exceeds 48GB)
+reason|gpt-oss:20b|65536||
+# rerank: no newer public Ollama pin; keep Qwen3-Reranker-4B
+rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+
 # ---- Retired (deleted by deploy.sh --prune; kept here as history) ----
+retired|qwen3.6:35b-a3b-q4_K_M|||
+retired|qwen3.6:27b-q8_0|||
+retired|qwen3-embedding:4b|||
+retired|gemma4:26b|||
 retired|qwen3-coder:30b-a3b-q8_0|||
 retired|qwen3-coder:30b-a3b-q4_K_M|||
 retired|qwen3:8b|||

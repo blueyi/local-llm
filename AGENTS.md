@@ -42,6 +42,8 @@
 | Ollama 权重 | `~/models/ollama/`（`~/.ollama/models` 是指向它的 symlink，勿删） |
 | 手动 GGUF（含 LM Studio 共享） | `~/models/gguf/`（`~/.lmstudio/models/llm-gguf` symlink 指向它） |
 | 文生图权重（mflux） | `~/models/image-gen/` |
+| 语音 ASR 权重（mlx-whisper） | `~/models/speech/` |
+| 语音 TTS 权重（mlx-audio） | `~/models/tts/` |
 
 用户提到「本地大模型 / Ollama / 换模型」时：先 `move_agent_to_root` 到本目录再改。
 
@@ -49,11 +51,18 @@
 
 ```bash
 lm status / check                 # 总览 / 体检+对账
-lm deploy [main|deep|fast]        # 一键部署（读 config/models.manifest，断点续传；--prune 清 retired）
-lm run [tier] / lm test [tier]    # 聊天 / 冒烟+tok/s
-lm image "prompt"                 # 文生图（--model --size --steps --seed --edit）
-lm pull-image <hf-repo>           # 文生图权重下载（hf-mirror 直拉）
-lm import <name> <gguf> [ctx]     # 手动 GGUF 导入
+lm deploy [tier] [--force]        # 部署（缺则拉；--force 已装也重拉）
+lm update                         # 远程目录+硬件推荐三档 → 确认后写 manifest 并 deploy
+lm get <query>                    # 模糊搜索远程模型 → 交互选择 → pull（--tier …）
+lm run [tier] / lm test [tier]    # 聊天 / 冒烟（含 embed|chat|reason|rerank|asr|tts）
+lm image "prompt" / lm asr <audio># 文生图 / 语音转写
+lm tts "text"                     # 语音合成（--voice / --lang）
+lm pull-image <hf-repo>           # 文生图权重
+lm pull-speech [hf-repo]          # ASR 权重（hf-mirror → ~/models/speech）
+lm pull-tts [hf-repo]             # TTS 权重（hf-mirror → ~/models/tts）
+lm pull-gguf [tier...]            # 清单内 HF GGUF → ~/models/gguf（给 LM Studio）
+lm rm <name|tier> [--yes]         # 卸载 Ollama 模型（确认提示；等同 ollama rm）
+lm import <name> <gguf> [ctx]     # 手动 GGUF 导入 Ollama
 lm sync                           # registry 回写
 ```
 
@@ -61,6 +70,10 @@ lm sync                           # registry 回写
 
 ## 模型清单 SSOT
 
-**`config/models.manifest`（LLM）+ `config/image-models.manifest`（文生图）是唯二模型清单**。
-升级 LLM = 改 models.manifest → `lm deploy`；升级文生图 = 改 image-models.manifest → `lm pull-image`。
-其他文档（tiers.md / registry / defaults.env）只做说明，**不要在脚本里硬编码模型名**。
+**`config/models.manifest`（LLM/RAG）+ `config/image-models.manifest`（文生图）+ `config/speech-models.manifest`（ASR）+ `config/tts-models.manifest`（TTS）**。
+升级 LLM = 改 models.manifest → `lm deploy`；或 `lm update` / `lm get --tier …`。
+升级文生图 = 改 image-models.manifest → `lm pull-image`。
+升级 ASR = 改 speech-models.manifest → `lm pull-speech`。
+升级 TTS = 改 tts-models.manifest → `lm pull-tts`。
+推荐策略（非安装 SSOT）在 `config/update-policy.conf`。
+其他文档只做说明，**不要在脚本里硬编码模型名**。

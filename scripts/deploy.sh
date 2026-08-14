@@ -7,14 +7,16 @@
 #
 # Usage:
 #   ./scripts/deploy.sh                # deploy every tier in the manifest
-#   ./scripts/deploy.sh main           # deploy a single tier (main|deep|fast)
+#   ./scripts/deploy.sh main           # deploy a single tier (main|deep|fast|embed|chat)
 #   ./scripts/deploy.sh --check        # health check + reconciliation only, no install
 #   ./scripts/deploy.sh --prune        # deploy, then delete retired models (asks for confirmation)
+#   ./scripts/deploy.sh --force        # re-pull even if already installed
 #   ./scripts/deploy.sh main --gguf    # force the manual GGUF download path (skip ollama pull)
 #
 # Install strategy (per model):
 #   1) Prefer `ollama pull <tag>`     — native resumable download, simplest
 #   2) On failure, fall back to GGUF download + import — curl -C - resume, mirrored domain
+#   Without --force: skip tags already present in `ollama list`
 #
 # Network: the HF_ENDPOINT env var overrides the mirror (default hf-mirror.com).
 #   export HF_ENDPOINT=https://huggingface.co   # if direct access works
@@ -31,15 +33,17 @@ IMPORT="$ROOT/scripts/import-gguf.sh"
 ONLY_TIER=""
 DO_CHECK=0
 DO_PRUNE=0
+FORCE_PULL=0
 FORCE_GGUF=0
 for arg in "$@"; do
   case "$arg" in
-    main|deep|fast) ONLY_TIER="$arg" ;;
+    main|deep|fast|embed|chat|reason|rerank) ONLY_TIER="$arg" ;;
     a) ONLY_TIER="deep" ;;   # legacy tier-letter compatibility
     b) ONLY_TIER="main" ;;
     c) ONLY_TIER="fast" ;;
     --check)      DO_CHECK=1 ;;
     --prune)      DO_PRUNE=1 ;;
+    --force)      FORCE_PULL=1 ;;
     --gguf)       FORCE_GGUF=1 ;;
     -h|--help)    grep -E '^#( |=)' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *)            echo "Unknown argument: $arg (see --help)"; exit 1 ;;
@@ -129,9 +133,12 @@ download_gguf() {
 # ---- Install a single model ----
 install_model() {
   local tier="$1" tag="$2" ctx="$3" gguf_url="$4" mmproj_url="$5"
-  if installed_tags | grep -qx "$tag"; then
+  if [[ "$FORCE_PULL" -eq 0 ]] && installed_tags | grep -qx "$tag"; then
     ok "[$tier] already installed: $tag"
     return 0
+  fi
+  if [[ "$FORCE_PULL" -eq 1 ]] && installed_tags | grep -qx "$tag"; then
+    warn "[$tier] --force: re-pulling $tag"
   fi
 
   # Path 1: ollama pull (native resumable download)
@@ -149,11 +156,11 @@ install_model() {
   local gguf localname
   gguf="$(download_gguf "$gguf_url")" || return 1
   [[ -n "$mmproj_url" ]] && download_gguf "$mmproj_url" >/dev/null || true
-  # Derive a valid local name from the tag (colons/slashes -> hyphens)
-  localname="$(echo "$tag" | tr ':/' '--')"
+  # Derive ollama model name: keep official tag (colons OK) so lm run matches
+  localname="$tag"
   log "[$tier] importing into ollama: $localname (ctx=$ctx)"
   "$IMPORT" "$localname" "$gguf" "$ctx"
-  ok "[$tier] GGUF import complete: $localname (note: local name differs from the official tag)"
+  ok "[$tier] GGUF import complete: $localname"
 }
 
 # ---- Retired model cleanup ----

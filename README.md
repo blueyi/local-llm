@@ -7,9 +7,11 @@
 
 ```text
 ~/models/
-├── ollama/      # 三档 LLM 权重（~/.ollama/models 是指向它的 symlink，勿删）
-├── image-gen/   # 文生图权重（FLUX.2 Klein / Z-Image-Turbo）
-└── gguf/        # 手动下载的 GGUF（~/.lmstudio/models/llm-gguf symlink 指向它）
+├── ollama/      # LLM / embed / rerank / chat / reason（~/.ollama/models → symlink）
+├── image-gen/   # 文生图（FLUX.2 Klein / Z-Image-Turbo）
+├── speech/      # ASR（mlx-whisper）
+├── tts/         # TTS（mlx-audio / Kokoro）
+└── gguf/        # 手动 GGUF（~/.lmstudio/models/llm-gguf → symlink）
 ```
 
 ## 统一入口：`lm`
@@ -25,28 +27,41 @@ lm image "a cute kitten"     # 文生图（3~8s 出图，全离线）
 
 # —— 部署 / 升级 ——
 lm check                     # 体检 + manifest 对账（不安装）
-lm deploy                    # 按 manifest 部署全部三档（断点续传，可重入）
+lm deploy                    # 按 manifest 部署（缺则拉，可重入）
+lm deploy --force            # 已装也强制重拉
+lm update                    # 远程最新 + 本机硬件 → 推荐三档，确认后更新并 deploy
+lm get <query>               # 模糊搜索远程模型，交互选择后下载（可 --tier 写入清单）
 lm pull-image <hf-repo>      # 下载文生图权重（hf-mirror 直拉）
 
 # —— 维护 ——
+lm rm <name|tier>            # 卸载 Ollama 模型（确认提示；可用档位名）
 lm import <name> <gguf> [ctx]  # 手动 GGUF 导入 Ollama
 lm sync                        # ollama list 回写 registry
 ```
 
 首次安装（新机器）见 [docs/install.md](./docs/install.md)。
 
-## 三档 LLM（main / deep / fast）
+## LLM / RAG / 推理角色
 
-| 档位 | 场景 | 模型 | 实测 |
-|------|------|------|------|
-| **main 日常主力** | 编程 Agent、长文、识图 | `qwen3.6:35b-a3b-q4_K_M` (23GB) | 104 tok/s |
-| **deep 深度质量** | 难 bug、复杂推理、精读 | `qwen3.6:27b-q8_0` (29GB) | 18 tok/s |
-| **fast 极限速度** | 草稿、补全、快速扫图 | `qwen3.5:9b` (6.6GB) | 77 tok/s |
+| 角色 | 场景 | 模型 | 约大小 |
+|------|------|------|--------|
+| **main** | 编程 Agent、长文、识图 | `qwen3.8:27b-q4_K_M` | 18GB |
+| **deep** | 难 bug、精读 | `qwen3.8:27b-q8_0` | 30GB |
+| **fast** | 草稿、补全 | `qwen3.5:9b` | 6.6GB |
+| **embed** | RAG 检索 | `qwen3-embedding:8b` | 4.7GB |
+| **rerank** | RAG 重排 | `awenleven/Qwen3-Reranker-4B:Q4_K_M` | 2.5GB |
+| **chat** | 闲聊、创意（非 Agent） | `gemma4:31b` | 20GB |
+| **reason** | 专用推理 | `gpt-oss:20b` | ~14GB |
 
-> 记法：平时用 main，难题用 deep，赶时间用 fast。三档均**原生 vision**。
-> 48GB 法则：同时只加载一个 ≥18GB 大模型（详见 [docs/environment.md](./docs/environment.md)）。
+语音：ASR `lm asr audio.wav`；TTS 日常 `lm tts "你好"`（Kokoro），质量档 `lm tts "…" --model qwen3-tts-1.7b`（Qwen3-TTS 1.7B）。详见 [docs/tiers.md](./docs/tiers.md)。
 
-**升级/换模型** = 改 [`config/models.manifest`](./config/models.manifest)（唯一清单）→ `lm deploy` → 完成。
+```bash
+lm deploy                    # 拉取 models.manifest 全部角色
+lm pull-speech               # ASR 权重
+lm pull-tts                  # TTS 权重
+lm pull-gguf main deep fast --link   # Unsloth GGUF → ~/models/gguf（LM Studio）
+lm test reason && lm test rerank && lm test asr && lm test tts
+```
 
 ## 本地文生图
 
@@ -79,8 +94,11 @@ lm image --edit photo.png "make the sky sunset orange" out.png # 改图
 
 ```text
 bin/lm                          # ← 统一 CLI 入口（唯一需要记住的命令）
-config/models.manifest          # LLM 三档清单（SSOT）
+config/models.manifest          # LLM/RAG/推理角色清单（SSOT）
 config/image-models.manifest    # 文生图模型清单（SSOT）
+config/speech-models.manifest   # ASR 模型清单（SSOT）
+config/tts-models.manifest      # TTS 模型清单（SSOT）
+config/update-policy.conf        # lm update / lm get 的推荐策略（非安装 SSOT）
 scripts/                        # lm 各子命令的实现（不直接调用）
 docs/
 ├── environment.md              # 硬件、内存法则、运行时栈、API
@@ -99,4 +117,5 @@ integrations/hermes-mflux-plugin/  # Hermes 插件源码备份（部署在 ~/.he
 1. **SSOT**：模型清单只存在于 `config/*.manifest`，脚本/文档不硬编码模型名。
 2. **权重与知识库分离**：仓库只有文本；权重统一 `~/models/`，靠 symlink 兼容各工具默认路径。
 3. **可重入**：`lm deploy` 幂等，断点续传（ollama 原生 / curl 对 CDN 最终 URL 续传）。
-4. **改清单即升级**：换模型不改代码，改 manifest 一行 → `lm deploy` / `lm pull-image`。
+4. **改清单即升级**：换模型不改代码，改 manifest 一行 → `lm deploy` / `lm pull-image`；或用 `lm update` / `lm get` 自动发现后写入清单。
+5. **更新前确认**：`lm update` / `lm get` 默认交互确认；硬件未指定时自动探测本机。

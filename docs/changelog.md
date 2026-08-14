@@ -1,6 +1,79 @@
 # Changelog
 
+## 2026-08-15（`lm rm` + `lm deploy --force`）
+
+- 新增 **`lm rm <name|tier> [--yes]`**：封装 `ollama rm`，执行前确认提示；档位名可解析；删后自动 sync registry
+- **`lm deploy --force`**：已装 tag 也重新 `ollama pull`（默认仍跳过已装）
+- 文档：AGENTS / README / operations 同步；禁止再直接写 `ollama rm`
+
+## 2026-08-15（v2.9：全面换代 — Qwen3.8 + embed8b + gemma4:31b）
+
+按最新远程目录与 48GB 预算重排：
+
+| 档位 | 原 | 新 |
+|------|----|----|
+| main | `qwen3.6:35b-a3b-q4_K_M` | **`qwen3.8:27b-q4_K_M`**（~18GB，最新开源代） |
+| deep | `qwen3.6:27b-q8_0` | **`qwen3.8:27b-q8_0`**（~30GB） |
+| fast | `qwen3.5:9b` | 保持（尚无更小的 3.8） |
+| embed | `qwen3-embedding:4b` | **`qwen3-embedding:8b`**（4.7GB） |
+| chat | `gemma4:26b` | **`gemma4:31b`**（20GB） |
+| reason / rerank | 不变 | `gpt-oss:20b` / Qwen3-Reranker-4B |
+
+- `config/update-policy.conf`：`FAMILIES` 优先 `qwen3.8`
+- GGUF：`unsloth/Qwen3.8-27B-GGUF`（Q4_K_M / Q8_0 + mmproj）
+- 不做：`qwen3.8:27b-bf16`（56GB）、`gpt-oss:120b`（65GB）、3.8-2.4T
+- **运行时**：Ollama 库内 `qwen3.8` 要求比 brew stable 更新的引擎；本机升至可用版本后用 `ollama pull`，否则走 Unsloth GGUF 导入（`lm deploy` 自动回退）
+
+## 2026-08-02（v2.8.1：TTS 质量档 Qwen3-TTS 1.7B CustomVoice）
+
+- 新增 **alt** `qwen3-tts-1.7b`：`mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16`（~4GB，本机最强可用）
+- 保留 **primary** Kokoro 作日常快路径；`lm tts --model qwen3-tts-1.7b`，支持 `--instruct` 情绪/风格
+- 中文默认说话人 `Vivian`，英文 `Serena`（CustomVoice 内置：serena/vivian/uncle_fu/ryan/aiden/…）
+
+## 2026-08-02（v2.8：Speech TTS — Kokoro-82M + mlx-audio）
+
+- **选型**：`mlx-community/Kokoro-82M-bf16`（~312MB 权重 + 多音色；Apache；中英；Apple Silicon MLX）
+- 新增 `config/tts-models.manifest`、`lm pull-tts`、`lm tts`、`lm test tts`；权重目录 `~/models/tts/`
+- 引擎：`uv tool install mlx-audio --with 'misaki[en]' --with 'misaki[zh]'`；英语另需 `brew install espeak-ng` + `en_core_web_sm` 装入 tool 环境
+- 默认英音 `af_heart`；中文启发式切 `zf_xiaoxiao` / `--lang z`
+- 文档：tiers / registry / operations / AGENTS / README 同步；TTS 从「暂缺」标为已装
+
+## 2026-08-02（`lm pull-gguf`：为 LM Studio 落盘 Unsloth GGUF）
+
+- 新增 `lm pull-gguf [tier...] [--link]`：按 `models.manifest` 的 `HF_GGUF_URL` 断点续传下载到 `~/models/gguf/`，并刷新 `~/.lmstudio/models/llm-gguf` symlink
+- 推荐本机三套：35B-A3B Q4_K_M / 27B Q8_0 / 9B Q4_K_M（+ mmproj）
+- 与 Ollama 权重分离；文档 tiers/operations 补充 LM Studio 用法
+
+## 2026-08-02（v2.7：补齐 reason / rerank / speech ASR）
+
+对照常用分类缺口补装：
+
+- **reason**：`gpt-oss:20b`（13GB，专用推理）
+- **rerank**：`awenleven/Qwen3-Reranker-4B:Q4_K_M`（2.5GB，配对 embed）
+- **speech ASR**：mlx-whisper + `whisper-large-v3-turbo`（`config/speech-models.manifest`，`lm asr` / `lm pull-speech`）
+- TTS 仍缺；独立 VL / 旗舰 MoE 仍不做
+- `lm test asr|reason|rerank`；`status` 显示 speech 权重
+
+## 2026-08-02（v2.6：场景分类补齐 — embed + chat）
+
+对照业界本地开源分类（coding / deep / fast / embedding / chat-creative / vision / image-gen）：
+
+- **维持** main/deep/fast：`qwen3.6:35b-a3b-q4_K_M` / `qwen3.6:27b-q8_0` / `qwen3.5:9b`（48GB 上编码仍为消费级 SOTA）
+- **新增 embed**：`qwen3-embedding:4b`（RAG 缺口）
+- **新增 chat**：`gemma4:26b`（Arena/多语言/创意；明确不进 Agent main）
+- **刻意不做**：独立 VL、R1 distill、Coder-Next 80B、旗舰 MoE（装不下或已被覆盖）
+- `deploy` / `lm test` / `lm get --tier` 支持 `embed|chat`；`docs/tiers.md` 重写为分类矩阵
+
+## 2026-07-27（v2.5：`lm update` / `lm get` 远程发现 + 硬件感知更新）
+
+- **`lm update`**：从 ollama.com 拉取候选 tag，结合本机硬件（默认 `sysctl` 探测；可 `--ram` / `--chip` 覆盖）按 `config/update-policy.conf` 为 main/deep/fast 打分推荐；**更新前确认**；确认后写 `config/models.manifest` 并 `lm deploy`（`--dry-run` / `--yes` / `--no-deploy`）。
+- **`lm get <query>`**：远程模糊搜索 → 家族/tag 不唯一时交互选择 → `ollama pull`；可选 `--tier` 写入清单。
+- 新增：`scripts/lib/model_catalog.py`、`scripts/update-models.sh`、`scripts/get-model.sh`、`config/update-policy.conf`。
+- 评分含稳定性阈值（避免 MTP/同体积别名无意义抖动）；排除 mlx/bf16 自动入选。
+- 文档：AGENTS / README / operations 同步。
+
 ## 2026-07-22（v2.4.1：代码/脚本/配置全英文化）
+
 
 - `bin/lm` + `scripts/*.sh` + `config/*.manifest` + `config/defaults.env.example` + `integrations/*/README.md`：注释、帮助文本、日志输出全部改为英文（规则：代码内容一律英文；docs/ 仍为中文文档）。
 - 顺带修复：`import-all-gguf.sh` 中两处指向已删除 `docs/manual-download.md` 的引用 → `docs/install.md`；清除 `config/.DS_Store`。

@@ -1,0 +1,15 @@
+# =============================================================
+# speech-models.manifest — ASR (speech-to-text) model SSOT
+# =============================================================
+# Engine: mlx-whisper (Apple Silicon). Not served by Ollama.
+# Pull weights: lm pull-speech [repo]   -> ~/models/speech/<basename>/
+# Transcribe:   lm asr <audio> [--model <id>]
+#
+# Fields: ROLE|MODEL_ID|HF_REPO|ENGINE
+#   ROLE     : primary=default  alt=alternative  retired=to delete
+#   MODEL_ID : short name for lm asr --model
+#   HF_REPO  : Hugging Face / mlx-community repo (pulled via hf-mirror curl)
+#   ENGINE   : mlx-whisper
+# =============================================================
+
+primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper

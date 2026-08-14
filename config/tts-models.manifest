@@ -1,0 +1,22 @@
+# =============================================================
+# tts-models.manifest — TTS (text-to-speech) model SSOT
+# =============================================================
+# Engine: mlx-audio (Apple Silicon). Not served by Ollama.
+# Pull weights: lm pull-tts [repo]   -> ~/models/tts/<basename>/
+# Synthesize:   lm tts "text" [--model <id>] [--voice ...]
+#
+# Roles:
+#   primary = fast daily (Kokoro ~375MB)
+#   alt     = max quality on this Mac (Qwen3-TTS 1.7B CustomVoice ~4GB)
+#
+# Fields: ROLE|MODEL_ID|HF_REPO|ENGINE|DEFAULT_VOICE
+#   ROLE          : primary=default  alt=quality  retired=to delete
+#   MODEL_ID      : short name for lm tts --model
+#   HF_REPO       : Hugging Face / mlx-community repo (pulled via hf-mirror curl)
+#   ENGINE        : mlx-audio
+#   DEFAULT_VOICE : Kokoro: af_heart / zf_xiaoxiao; Qwen3 CustomVoice: Serena / Vivian
+#   Qwen3 speakers: serena, vivian, uncle_fu, ryan, aiden, ono_anna, sohee, eric, dylan
+# =============================================================
+
+primary|kokoro-82m|mlx-community/Kokoro-82M-bf16|mlx-audio|af_heart
+alt|qwen3-tts-1.7b|mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16|mlx-audio|Serena

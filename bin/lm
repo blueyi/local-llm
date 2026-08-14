@@ -9,22 +9,30 @@
 #
 # [Daily]
 #   lm status                     # Overview: models / weights dirs / disk
-#   lm run [main|deep|fast]       # Interactive chat (default: main; any ollama tag also works)
-#   lm test [tag] [prompt]        # Smoke test + tok/s
+#   lm run [main|deep|fast|chat|reason]  # Interactive chat (default: main; any ollama tag also works)
+#   lm test [tag] [prompt]        # Smoke test (tiers: main|deep|fast|embed|chat|reason|rerank)
 #   lm image "prompt"             # Text-to-image (--model/--size/--steps/--seed/--edit, see lm image --help)
+#   lm asr <audio>                # Speech-to-text via mlx-whisper (--model/--lang)
+#   lm tts "text"                 # Text-to-speech via mlx-audio (--model/--voice/--lang/--play)
 #
 # [Deploy / Upgrade]
 #   lm check                      # Health check + manifest reconciliation (no install)
-#   lm deploy [main|deep|fast]    # Deploy LLMs per manifest (--prune removes retired, --gguf forces manual path)
+#   lm deploy [tier] [--force]    # Deploy LLMs per manifest; --force re-pulls even if installed
+#   lm update                     # Recommend + update 3 tiers from remote catalog + hardware (--dry-run/--yes/--ram/--chip/--no-deploy)
+#   lm get <query>                # Fuzzy-search remote model, interactive pick, pull (--tier/--tag/--yes/--dry-run)
 #   lm pull-image <hf-repo>       # Download image-gen weights (direct pull via hf-mirror to ~/models/image-gen)
+#   lm pull-speech [hf-repo]      # Download ASR weights (hf-mirror -> ~/models/speech)
+#   lm pull-tts [hf-repo]         # Download TTS weights (hf-mirror -> ~/models/tts)
+#   lm pull-gguf [tier...]        # Download manifest HF GGUFs into ~/models/gguf for LM Studio (--link)
 #
 # [Maintenance]
+#   lm rm <name|tier> [--yes]     # Remove Ollama model (confirm unless --yes); syncs registry
 #   lm import <name> <gguf> [ctx] # Manually import a single GGUF into Ollama
 #   lm sync                       # Write `ollama list` back into docs/models-registry.md
 #   lm help                       # This help
 #
-# Model list SSOT: config/models.manifest (LLM) + config/image-models.manifest (image-gen)
-# Unified weights root: ~/models/{ollama,gguf,image-gen}
+# Model list SSOT: config/models.manifest + image/speech/tts manifests
+# Unified weights root: ~/models/{ollama,gguf,image-gen,speech,tts}
 # =============================================================
 set -euo pipefail
 
@@ -45,9 +53,17 @@ case "$CMD" in
     exec ollama run "$TAG" ;;
   test)        exec "$S/smoke-test.sh" "$@" ;;
   image)       exec "$S/gen-image.sh" "$@" ;;
+  asr)         exec "$S/asr.sh" "$@" ;;
+  tts)         exec "$S/tts.sh" "$@" ;;
   check)       exec "$S/deploy.sh" --check "$@" ;;
   deploy)      exec "$S/deploy.sh" "$@" ;;
+  update)      exec "$S/update-models.sh" "$@" ;;
+  get)         exec "$S/get-model.sh" "$@" ;;
   pull-image)  exec "$S/pull-image-model.sh" "$@" ;;
+  pull-speech) exec "$S/pull-speech-model.sh" "$@" ;;
+  pull-tts)    exec "$S/pull-tts-model.sh" "$@" ;;
+  pull-gguf)   exec "$S/pull-gguf.sh" "$@" ;;
+  rm)          exec "$S/rm-model.sh" "$@" ;;
   import)      exec "$S/import-gguf.sh" "$@" ;;
   sync)        exec "$S/sync-registry.sh" "$@" ;;
   help|-h|--help) usage ;;
