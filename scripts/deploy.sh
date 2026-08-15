@@ -29,6 +29,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 MANIFEST="$ROOT/config/models.manifest"
 GGUF_DIR="${LLM_GGUF_DIR:-$HOME/models/gguf}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
@@ -59,11 +60,6 @@ for arg in "$@"; do
     *)            echo "Unknown argument: $arg (see --help)"; exit 1 ;;
   esac
 done
-
-log()  { printf '\033[1;36m>>> %s\033[0m\n' "$*"; }
-warn() { printf '\033[1;33m!!! %s\033[0m\n' "$*"; }
-ok()   { printf '\033[1;32m OK %s\033[0m\n' "$*"; }
-err()  { printf '\033[1;31mERR %s\033[0m\n' "$*"; }
 
 [[ -f "$MANIFEST" ]] || { err "manifest not found: $MANIFEST"; exit 1; }
 
@@ -103,8 +99,6 @@ preflight() {
   free="$(df -h /System/Volumes/Data 2>/dev/null | tail -1 | awk '{print $4}')"
   ok "free disk: ${free:-unknown}"
 }
-
-installed_tags() { ollama list 2>/dev/null | awk 'NR>1{print $1}'; }
 
 # ---- Resumable GGUF download ----
 download_gguf() {

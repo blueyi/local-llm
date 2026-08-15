@@ -19,6 +19,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 CATALOG="$ROOT/scripts/lib/model_catalog.py"
 MANIFEST="$ROOT/config/models.manifest"
 POLICY="$ROOT/config/update-policy.conf"
@@ -43,11 +44,6 @@ while [[ $# -gt 0 ]]; do
     *) echo "Unknown argument: $1 (see --help)"; exit 1 ;;
   esac
 done
-
-log()  { printf '\033[1;36m>>> %s\033[0m\n' "$*"; }
-warn() { printf '\033[1;33m!!! %s\033[0m\n' "$*"; }
-ok()   { printf '\033[1;32m OK %s\033[0m\n' "$*"; }
-err()  { printf '\033[1;31mERR %s\033[0m\n' "$*"; }
 
 command -v python3 >/dev/null 2>&1 || { err "python3 required"; exit 1; }
 [[ -f "$CATALOG" ]] || { err "missing $CATALOG"; exit 1; }

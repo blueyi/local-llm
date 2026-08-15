@@ -16,6 +16,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 UPSTREAM_DIR="${OLLAMA_UPSTREAM_DIR:-/opt/homebrew/opt/ollama-upstream}"
 GH_LATEST_API="https://api.github.com/repos/ollama/ollama/releases/latest"
 GH_ASSET_BASE="https://github.com/ollama/ollama/releases/download"
@@ -33,11 +34,6 @@ for arg in "$@"; do
     *) echo "Unknown argument: $arg (see --help)"; exit 1 ;;
   esac
 done
-
-log()  { printf '\033[1;36m>>> %s\033[0m\n' "$*"; }
-warn() { printf '\033[1;33m!!! %s\033[0m\n' "$*"; }
-ok()   { printf '\033[1;32m OK %s\033[0m\n' "$*"; }
-err()  { printf '\033[1;31mERR %s\033[0m\n' "$*"; }
 
 # Strip leading v; keep digits and dots only
 normalize_ver() {

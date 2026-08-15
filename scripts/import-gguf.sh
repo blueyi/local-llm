@@ -3,7 +3,7 @@
 # Usage:
 #   ./scripts/import-gguf.sh <ollama-name> <path-to.gguf> [num_ctx]
 # Example:
-#   ./scripts/import-gguf.sh qwen3-coder-b-q4 ~/models/gguf/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf 32768
+#   ./scripts/import-gguf.sh local-main ~/models/gguf/model-Q4_K_M.gguf 32768
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 NAME="${1:-}"

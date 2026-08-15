@@ -4,6 +4,8 @@
 
 更新：`lm sync` 或手动编辑。
 
+当前清单版本：v2.9（2026-08-15）；模型角色与安装 SSOT 为 `config/models.manifest`，本次脚本重构未改变已安装模型。
+
 ## 场景角色 → 当前配置（v2.9，SSOT: `config/models.manifest`）
 
 | 角色 | 场景 | 模型 | 状态 |
@@ -26,10 +28,10 @@
 <!-- BEGIN OLLAMA LIST -->
 ```
 NAME                                  ID              SIZE      MODIFIED     
-gemma4:31b                            6316f0629137    19 GB     3 hours ago     
-qwen3-embedding:8b                    64b933495768    4.7 GB    4 hours ago     
-qwen3.8:27b-q8_0                      8f5fb6b71ea0    29 GB     4 hours ago     
-qwen3.8:27b-q4_K_M                    25b843619e94    17 GB     13 hours ago    
+gemma4:31b                            6316f0629137    19 GB     12 hours ago    
+qwen3-embedding:8b                    64b933495768    4.7 GB    13 hours ago    
+qwen3.8:27b-q8_0                      8f5fb6b71ea0    29 GB     13 hours ago    
+qwen3.8:27b-q4_K_M                    25b843619e94    17 GB     22 hours ago    
 gpt-oss:20b                           17052f91a42e    13 GB     13 days ago     
 awenleven/Qwen3-Reranker-4B:Q4_K_M    086092f9af6f    2.5 GB    13 days ago     
 gemma4:26b                            5571076f3d70    17 GB     13 days ago     

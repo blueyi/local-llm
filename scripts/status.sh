@@ -2,6 +2,7 @@
 # status.sh — local model stack overview (lm status)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 MODELS_ROOT="$HOME/models"
 GGUF_DIR="${LLM_GGUF_DIR:-$MODELS_ROOT/gguf}"
 MANIFEST="$ROOT/config/models.manifest"
@@ -19,8 +20,6 @@ scenario_for() {
     *)      echo "—" ;;
   esac
 }
-
-installed_tags() { ollama list 2>/dev/null | awk 'NR>1{print $1}'; }
 
 # Print SIZE column from `ollama list` for a tag (e.g. "17 GB")
 ollama_size_for() {

@@ -44,7 +44,7 @@ lm update --no-deploy        # 只改 manifest，稍后手动 lm deploy
 ### 指定/模糊搜索单个模型
 
 ```bash
-lm get qwen3.6               # 多个家族/tag 时交互选择
+lm get qwen3.8               # 多个家族/tag 时交互选择
 lm get "35b-a3b-q4"          # 模糊
 lm get ornith --tier main    # 下载并写入 main 档
 lm get qwen3-embedding:8b --tier embed --yes

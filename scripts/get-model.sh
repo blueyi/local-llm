@@ -7,18 +7,19 @@
 # write the chosen tag into config/models.manifest for a tier.
 #
 # Usage:
-#   lm get qwen3.6
+#   lm get qwen3.8
 #   lm get "35b-a3b-q4"
 #   lm get qwen3.5:9b
 #   lm get ornith --tier main
 #   lm get qwen --yes                 # auto-pick top match (non-interactive)
-#   lm get qwen3.6 --tag q4_K_M       # constrain tag fuzzy filter
-#   lm get qwen3.6 --dry-run          # resolve only, do not pull
+#   lm get qwen3.8 --tag q4_K_M       # constrain tag fuzzy filter
+#   lm get qwen3.8 --dry-run          # resolve only, do not pull
 #
 # =============================================================
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 CATALOG="$ROOT/scripts/lib/model_catalog.py"
 MANIFEST="$ROOT/config/models.manifest"
 POLICY="$ROOT/config/update-policy.conf"
@@ -47,11 +48,6 @@ while [[ $# -gt 0 ]]; do
       shift ;;
   esac
 done
-
-log()  { printf '\033[1;36m>>> %s\033[0m\n' "$*"; }
-warn() { printf '\033[1;33m!!! %s\033[0m\n' "$*"; }
-ok()   { printf '\033[1;32m OK %s\033[0m\n' "$*"; }
-err()  { printf '\033[1;31mERR %s\033[0m\n' "$*"; }
 
 [[ -n "$QUERY" ]] || { err "usage: lm get <query> [--tier main|deep|fast]"; exit 1; }
 if [[ -n "$TIER" && ! "$TIER" =~ ^(main|deep|fast|embed|chat|reason|rerank)$ ]]; then

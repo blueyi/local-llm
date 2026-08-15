@@ -606,7 +606,7 @@ def fuzzy_filter(query: str, names: Iterable[str], limit: int = 20) -> list[str]
         if nl == q:
             scored.append((1.0, n))
             continue
-        # Candidate extends the query (qwen3 -> qwen3.6 / 35b-a3b-q4 -> 35b-a3b-q4_K_M)
+        # Candidate extends the query (family -> family:variant).
         if nl.startswith(q):
             scored.append((0.97, n))
             continue

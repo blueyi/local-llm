@@ -11,6 +11,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 MANIFEST="$ROOT/config/models.manifest"
 
 YES=0
@@ -48,11 +49,11 @@ command -v ollama >/dev/null 2>&1 || { echo "ERROR: ollama not installed"; exit 
 # Resolve tier name -> manifest tag
 TAG="$NAME"
 if [[ -f "$MANIFEST" ]] && grep -qE "^${NAME}\|" "$MANIFEST" 2>/dev/null; then
-  TAG="$(grep -E "^${NAME}\|" "$MANIFEST" | head -1 | cut -d'|' -f2 | xargs)"
+  TAG="$(manifest_value "$MANIFEST" "$NAME" 2)"
 fi
 
 if ! ollama list 2>/dev/null | awk 'NR>1{print $1}' | grep -qx "$TAG"; then
-  echo "ERROR: model not installed: $TAG"
+  err "model not installed: $TAG"
   if [[ "$TAG" != "$NAME" ]]; then
     echo "       (resolved from tier '$NAME')"
   fi

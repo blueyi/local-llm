@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-16（脚本重构：公共库、HF 下载与 SSOT 漂移修复）
+
+- 新增 `scripts/lib/common.sh`：统一日志、manifest 字段解析和 Ollama tag 查询，供 deploy/get/update/status/asr/tts/rm 等入口复用。
+- 新增 `scripts/lib/hf_download.sh`：统一 image/speech/tts 的 HF 文件清单、302 解析、Range 续传、大小校验和失败退出码；下载失败不再被静默吞掉。
+- `import-all-gguf` 改为按 `config/models.manifest` 动态导入，移除旧模型名/上下文硬编码。
+- 修正 README、defaults、install、operations 中仍指向 Qwen3.6 的当前默认示例；历史 changelog 与 retired manifest 条目保留作审计记录。
+- 验证：`bash -n bin/lm scripts/*.sh scripts/lib/*.sh`、`python3 -m py_compile scripts/lib/model_catalog.py`、`lm check` 全部通过。
+
 ## 2026-08-15（`lm pull-gguf`：HTTP/1.1 抗 CDN 断流）
 
 - 大文件下载改用 `--http1.1` + 外层重解析 URL（避免 curl 死磕过期 CDN / DNS 失败）

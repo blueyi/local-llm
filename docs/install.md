@@ -35,27 +35,27 @@ LM Studio（可选 GUI）：https://lmstudio.ai 下载，引擎选 **MLX**；`~/
 
 **存放目录：`~/models/gguf/`**（勿放进本仓库 git）
 
-### 直链清单（manifest 同源，2026-07 方案 v2.1）
+### 直链清单（manifest 同源，2026-08 方案 v2.9）
 
 | 档位 | 主模型直链 | 视觉 mmproj |
 |------|-----------|-------------|
-| main | https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf | 同仓库 mmproj-F16.gguf |
-| deep | https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/Qwen3.6-27B-Q8_0.gguf | 同仓库 mmproj-F16.gguf |
+| main | https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q4_K_M.gguf | 同仓库 mmproj-F16.gguf |
+| deep | https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q8_0.gguf | 同仓库 mmproj-F16.gguf |
 | fast | https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf | 同仓库 mmproj-F16.gguf |
 
-备用发布者：bartowski（同内容），如 `https://huggingface.co/bartowski/Qwen_Qwen3.6-35B-A3B-GGUF/...`。
+备用发布者：以 `config/models.manifest` 当前 URL 为准；不要在脚本或文档中另行维护模型 pin。
 断点续传坑（302 → CDN Range 探测）已封装在 `lm deploy` 内，手动 curl 见 `scripts/deploy.sh` 的 `download_gguf()` 注释。
 
 ### 导入
 
 ```bash
-lm import qwen3.6-b-q4 ~/models/gguf/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf 65536
-lm run qwen3.6-b-q4
+lm import qwen3.8-main-q4 ~/models/gguf/Qwen3.8-27B-Q4_K_M.gguf 65536
+lm run qwen3.8-main-q4
 ```
 
 - `ollama create` 会把权重复制进 `~/models/ollama/`，导入完成后 `~/models/gguf/` 里的副本可删（或留作备份）。
 - **mmproj 说明**：官方 `ollama pull` 的 tag 已内置视觉，无需额外文件；仅手动 GGUF 导入需要同仓库 `mmproj-*.gguf`（LM Studio 同目录放齐；Ollama Modelfile 双 FROM，以当前文档为准）。
-- 手动导入的本地名（如 `qwen3.6-b-q4`）与官方 tag 不同，功能等价即可；Cursor 模型名填 `create` 时的名字。
+- 手动导入的本地名与官方 tag 不同，功能等价即可；Cursor 模型名填 `create` 时的名字。
 
 ### 导入后回写
 

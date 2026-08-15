@@ -16,6 +16,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 MANIFEST="$ROOT/config/models.manifest"
 GGUF_DIR="${LLM_GGUF_DIR:-$HOME/models/gguf}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
@@ -30,11 +31,6 @@ for arg in "$@"; do
     *) echo "Unknown arg: $arg"; exit 1 ;;
   esac
 done
-
-log()  { printf '\033[1;36m>>> %s\033[0m\n' "$*"; }
-ok()   { printf '\033[1;32m OK %s\033[0m\n' "$*"; }
-warn() { printf '\033[1;33m!!! %s\033[0m\n' "$*"; }
-err()  { printf '\033[1;31mERR %s\033[0m\n' "$*"; }
 
 download_gguf() {
   # $1 url  $2 optional local filename override

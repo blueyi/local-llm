@@ -11,6 +11,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 MANIFEST="$ROOT/config/speech-models.manifest"
 SPEECH_ROOT="${LLM_SPEECH_DIR:-$HOME/models/speech}"
 
@@ -47,9 +48,9 @@ command -v mlx_whisper >/dev/null 2>&1 || {
 
 # Resolve MODEL_ID -> HF basename path
 if [[ -z "$MODEL_ID" ]]; then
-  MODEL_ID="$(awk -F'|' '/^primary\|/{print $2; exit}' "$MANIFEST")"
+  MODEL_ID="$(manifest_primary_value "$MANIFEST" 2)"
 fi
-REPO="$(awk -F'|' -v id="$MODEL_ID" '$1!="retired" && $2==id {print $3; exit}' "$MANIFEST")"
+REPO="$(manifest_value "$MANIFEST" "$MODEL_ID" 3)"
 [[ -n "$REPO" ]] || { echo "ERROR: unknown model id '$MODEL_ID' (see speech-models.manifest)"; exit 1; }
 MODEL_PATH="$SPEECH_ROOT/$(basename "$REPO")"
 [[ -f "$MODEL_PATH/weights.safetensors" || -f "$MODEL_PATH/config.json" ]] || {

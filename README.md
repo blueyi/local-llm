@@ -88,7 +88,7 @@ lm image --edit photo.png "make the sky sunset orange" out.png # 改图
 
 | Agent | 方式 |
 |-------|------|
-| **Cursor / 任意 OpenAI 客户端** | Base URL `http://127.0.0.1:11434/v1`，模型 `qwen3.6:35b-a3b-q4_K_M`（[docs/agent-integration.md](./docs/agent-integration.md)） |
+| **Cursor / 任意 OpenAI 客户端** | Base URL `http://127.0.0.1:11434/v1`，模型 `qwen3.8:27b-q4_K_M`（[docs/agent-integration.md](./docs/agent-integration.md)） |
 | **Hermes 对话出图** | `image_generate` 已接本地 mflux（user plugin），直接说"画一张…"即可；改图给图+指令。切模型：`hermes config set image_gen.model z-image-turbo` |
 | **Hermes 本地 LLM 兜底** | `local-ollama` provider 已注册为 fallback |
 

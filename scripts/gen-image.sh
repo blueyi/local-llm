@@ -20,6 +20,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 MANIFEST="$ROOT/config/image-models.manifest"
 WEIGHTS_ROOT="${IMAGE_MODELS_DIR:-$HOME/models/image-gen}"
 
@@ -63,7 +64,7 @@ fi
 
 CMD=()
 if [[ -n "$EDIT_IN" ]]; then
-  [[ -n "$EDIT_CLI" ]] || { echo "ERROR: model $ID does not support editing (EDIT_CLI empty; use flux2-klein-4b)"; exit 1; }
+  [[ -n "$EDIT_CLI" ]] || { echo "ERROR: model $ID does not support editing (EDIT_CLI empty; choose a manifest model with edit support)"; exit 1; }
   [[ -f "$EDIT_IN" ]] || { echo "ERROR: input image not found: $EDIT_IN"; exit 1; }
   CMD=("$EDIT_CLI" --model "$MODEL_DIR" --image-path "$EDIT_IN")
 else

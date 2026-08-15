@@ -15,6 +15,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 MANIFEST="$ROOT/config/tts-models.manifest"
 TTS_ROOT="${LLM_TTS_DIR:-$HOME/models/tts}"
 
@@ -66,10 +67,10 @@ command -v mlx_audio.tts.generate >/dev/null 2>&1 || {
 }
 
 if [[ -z "$MODEL_ID" ]]; then
-  MODEL_ID="$(awk -F'|' '/^primary\|/{print $2; exit}' "$MANIFEST")"
+  MODEL_ID="$(manifest_primary_value "$MANIFEST" 2)"
 fi
-REPO="$(awk -F'|' -v id="$MODEL_ID" '$1!="retired" && $2==id {print $3; exit}' "$MANIFEST")"
-DEFAULT_VOICE="$(awk -F'|' -v id="$MODEL_ID" '$1!="retired" && $2==id {print $5; exit}' "$MANIFEST")"
+REPO="$(manifest_value "$MANIFEST" "$MODEL_ID" 3)"
+DEFAULT_VOICE="$(manifest_value "$MANIFEST" "$MODEL_ID" 5)"
 [[ -n "$REPO" ]] || { echo "ERROR: unknown model id '$MODEL_ID' (see tts-models.manifest)"; exit 1; }
 MODEL_PATH="$TTS_ROOT/$(basename "$REPO")"
 [[ -f "$MODEL_PATH/config.json" ]] || {
