@@ -16,7 +16,7 @@
 
 ## 统一入口：`lm`
 
-一切操作从 `lm` 走（`bin/lm`，由 my-utils `config/resetrc.bash` 加入 PATH）：
+一切操作从 `lm` 走（`bin/lm`，由 my-utils `config/resetrc.bash` 加入 PATH）。核心命令按职责独立；image/speech/TTS 下载共用 `scripts/pull-hf-model.sh`，GGUF 与 LM Studio 链接共用 `scripts/pull-gguf.sh`，旧脚本路径仍保留兼容调用：
 
 ```bash
 # —— 日常 ——

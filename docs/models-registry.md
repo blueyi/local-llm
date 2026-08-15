@@ -4,7 +4,7 @@
 
 更新：`lm sync` 或手动编辑。
 
-当前清单版本：v2.9（2026-08-15）；模型角色与安装 SSOT 为 `config/models.manifest`，本次脚本重构未改变已安装模型。
+当前清单版本：v2.9（2026-08-15）；模型角色与安装 SSOT 为 `config/models.manifest`，本次脚本结构重构未改变已安装模型。
 
 ## 场景角色 → 当前配置（v2.9，SSOT: `config/models.manifest`）
 

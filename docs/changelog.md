@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-16（脚本结构重构：统一 HF / GGUF 辅助入口）
+
+- 新增 `scripts/pull-hf-model.sh`，统一 image、speech、TTS 的 manifest 解析与 Hugging Face 下载；原 `pull-image-model.sh`、`pull-speech-model.sh`、`pull-tts-model.sh` 保留为兼容 wrapper。
+- `pull-gguf.sh` 内置 LM Studio symlink 操作，支持 `--link-only`；原 `link-lmstudio-models.sh` 保留为兼容 wrapper。
+- 核心命令脚本继续独立，避免把 deploy/status/smoke-test 等复杂流程合并成不可维护的大脚本。
+
 ## 2026-08-16（脚本重构：公共库、HF 下载与 SSOT 漂移修复）
 
 - 新增 `scripts/lib/common.sh`：统一日志、manifest 字段解析和 Ollama tag 查询，供 deploy/get/update/status/asr/tts/rm 等入口复用。

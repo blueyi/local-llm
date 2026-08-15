@@ -9,6 +9,7 @@
 #   lm pull-gguf              # all tiers that have HF_GGUF_URL
 #   lm pull-gguf main deep    # selected tiers
 #   lm pull-gguf --link       # also refresh LM Studio symlink
+#   lm pull-gguf --link-only  # refresh symlink without downloading
 #
 # Incomplete / interrupted downloads resume automatically (curl -C -).
 # Large files use HTTP/1.1 to avoid CDN HTTP/2 stream resets (curl 92).
@@ -21,11 +22,36 @@ MANIFEST="$ROOT/config/models.manifest"
 GGUF_DIR="${LLM_GGUF_DIR:-$HOME/models/gguf}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 DO_LINK=0
+LINK_ONLY=0
 TIERS=()
+
+link_lmstudio_models() {
+  local src="$1" dest target
+  local candidates=(
+    "$HOME/.lmstudio/models"
+    "$HOME/.cache/lm-studio/models"
+    "$HOME/Library/Application Support/LM Studio/models"
+  )
+  for dest in "${candidates[@]}"; do
+    [[ -d "$dest" ]] && break
+  done
+  if [[ ! -d "${dest:-}" ]]; then
+    dest="$HOME/.lmstudio/models"
+    mkdir -p "$dest"
+    echo "Created $dest"
+  fi
+  [[ -d "$src" ]] || { err "source not found: $src"; return 1; }
+  target="$dest/llm-gguf"
+  mkdir -p "$(dirname "$target")"
+  ln -sfn "$src" "$target"
+  ok "Linked: $target -> $src"
+  ls -la "$target" | head -30
+}
 
 for arg in "$@"; do
   case "$arg" in
     --link) DO_LINK=1 ;;
+    --link-only) DO_LINK=1; LINK_ONLY=1 ;;
     -h|--help) grep -E '^#( |=)' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     main|deep|fast|embed|chat|reason|rerank) TIERS+=("$arg") ;;
     *) echo "Unknown arg: $arg"; exit 1 ;;
@@ -119,6 +145,11 @@ download_gguf() {
 [[ -f "$MANIFEST" ]] || { err "manifest missing: $MANIFEST"; exit 1; }
 mkdir -p "$GGUF_DIR"
 
+if [[ "$LINK_ONLY" -eq 1 ]]; then
+  link_lmstudio_models "$GGUF_DIR"
+  exit 0
+fi
+
 log "GGUF dir: $GGUF_DIR  (mirror: $HF_ENDPOINT)"
 COUNT=0
 SKIP=0
@@ -152,7 +183,7 @@ du -sh "$GGUF_DIR"/* 2>/dev/null | sort -h || du -sh "$GGUF_DIR"
 
 if [[ "$DO_LINK" -eq 1 ]] || [[ -d "$HOME/.lmstudio" ]]; then
   log "Refreshing LM Studio symlink"
-  "$ROOT/scripts/link-lmstudio-models.sh" "$GGUF_DIR" || true
+  link_lmstudio_models "$GGUF_DIR" || true
 fi
 
 echo
