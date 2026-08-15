@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-08-15（`lm pull-gguf`：HTTP/1.1 抗 CDN 断流）
+
+- 大文件下载改用 `--http1.1` + 外层重解析 URL（避免 curl 死磕过期 CDN / DNS 失败）
+- 退避计算去掉 bash4 `?:` 三元运算，兼容 macOS `/bin/bash` 3.2
+- 续传仍比对 Content-Length；不完整文件直接 `lm pull-gguf main --link` 即可
+
+## 2026-08-15（`lm status`：场景角色表）
+
+- `lm status` 新增 **Scenario roles** 段：按 `models.manifest` 列出 main/deep/fast/embed/chat/reason/rerank 的场景说明、配置模型与本地是否已装
+- `ollama list` 注解 ROLE（active / retired / extra）；GGUF 不完整文件标 ⚠ INCOMPLETE
+- `docs/models-registry.md` 改为「场景角色 → 当前配置」表；七档 LLM 均已 installed
+
 ## 2026-08-15（`lm deploy` 前自动检查 Ollama 版本）
 
 - 新增 `scripts/upgrade-ollama.sh` / **`lm upgrade-ollama`**：对照 GitHub latest；darwin 自动装到 `/opt/homebrew/opt/ollama-upstream` 并重启 daemon

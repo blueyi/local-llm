@@ -6,6 +6,31 @@ MODELS_ROOT="$HOME/models"
 GGUF_DIR="${LLM_GGUF_DIR:-$MODELS_ROOT/gguf}"
 MANIFEST="$ROOT/config/models.manifest"
 
+# Role → short scenario label (display only; SSOT remains models.manifest)
+scenario_for() {
+  case "$1" in
+    main)   echo "Agent / coding / vision" ;;
+    deep)   echo "Hard bugs / quality" ;;
+    fast)   echo "Draft / completion" ;;
+    embed)  echo "RAG retrieval" ;;
+    rerank) echo "RAG rerank" ;;
+    chat)   echo "Creative / multilingual" ;;
+    reason) echo "Dedicated reasoning" ;;
+    *)      echo "—" ;;
+  esac
+}
+
+installed_tags() { ollama list 2>/dev/null | awk 'NR>1{print $1}'; }
+
+# Print SIZE column from `ollama list` for a tag (e.g. "17 GB")
+ollama_size_for() {
+  local tag="$1"
+  ollama list 2>/dev/null | awk -v t="$tag" 'NR>1 && $1==t {
+    if (NF>=4) print $3,$4; else print "?"
+    exit
+  }'
+}
+
 echo "=== local-llm status ==="
 echo "Knowledge base: $ROOT"
 echo
@@ -13,7 +38,6 @@ echo
 echo "--- Unified weights root ($MODELS_ROOT) ---"
 if [ -d "$MODELS_ROOT" ]; then
   du -sh "$MODELS_ROOT"/* 2>/dev/null || echo "(empty)"
-  # Symlink health check
   for link in "$HOME/.ollama/models" "$HOME/.lmstudio/models/llm-gguf"; do
     if [ -L "$link" ]; then
       tgt="$(readlink "$link")"
@@ -27,10 +51,62 @@ else
 fi
 echo
 
+# ---- Scenario roles (SSOT: models.manifest) ----
+echo "--- Scenario roles (models.manifest) ---"
+if [ ! -f "$MANIFEST" ]; then
+  echo "(missing manifest)"
+elif ! command -v ollama >/dev/null 2>&1; then
+  echo "Ollama: not installed"
+else
+  printf '  %-8s %-28s %-42s %s\n' "ROLE" "SCENARIO" "MODEL" "LOCAL"
+  printf '  %-8s %-28s %-42s %s\n' "----" "--------" "-----" "-----"
+  while IFS='|' read -r tier tag _ctx _url _mm; do
+    case "$tier" in \#*|""|retired) continue ;; esac
+    tag="$(echo "$tag" | xargs)"
+    [[ -z "$tag" ]] && continue
+    sc="$(scenario_for "$tier")"
+    if installed_tags | grep -qx "$tag"; then
+      sz="$(ollama_size_for "$tag")"
+      printf '  %-8s %-28s %-42s ✓ %s\n' "$tier" "$sc" "$tag" "${sz:-installed}"
+    else
+      printf '  %-8s %-28s %-42s ✗ missing (lm deploy %s)\n' "$tier" "$sc" "$tag" "$tier"
+    fi
+  done < "$MANIFEST"
+fi
+echo
+
 if command -v ollama >/dev/null 2>&1; then
   echo "Ollama: $(ollama --version 2>/dev/null || echo unknown)"
-  echo "--- ollama list ---"
-  ollama list 2>/dev/null || echo "(daemon not running or empty)"
+  echo "--- ollama list (all local; ROLE = active manifest tier) ---"
+  printf '  %-8s %-42s %10s  %s\n' "ROLE" "NAME" "SIZE" "NOTE"
+  printf '  %-8s %-42s %10s  %s\n' "----" "----" "----" "----"
+  ollama list 2>/dev/null | awk 'NR>1 {
+    name=$1; size=$3" "$4
+    print name "\t" size
+  }' | while IFS=$'\t' read -r name size; do
+    [[ -z "$name" ]] && continue
+    role="—"
+    note=""
+    if [[ -f "$MANIFEST" ]]; then
+      while IFS='|' read -r tier tag _; do
+        case "$tier" in \#*|""|retired) continue ;; esac
+        tag="$(echo "$tag" | xargs)"
+        if [[ "$tag" == "$name" ]]; then
+          role="$tier"
+          break
+        fi
+      done < "$MANIFEST"
+      if [[ "$role" == "—" ]]; then
+        if grep -E "^retired\|" "$MANIFEST" | cut -d'|' -f2 | grep -qx "$name"; then
+          role="retired"
+          note="prune candidate (lm deploy --prune)"
+        else
+          note="extra (not in active roles)"
+        fi
+      fi
+    fi
+    printf '  %-8s %-42s %10s  %s\n' "$role" "$name" "$size" "$note"
+  done
   echo "--- ollama ps (currently loaded) ---"
   ollama ps 2>/dev/null || true
 else
@@ -39,12 +115,11 @@ fi
 echo
 
 # --- GGUF / LM Studio ---
-# bash 3.2 compatible (macOS /usr/bin/env bash)
 echo "--- GGUF (LM Studio) ---"
 echo "dir: $GGUF_DIR"
 gguf_human() { du -h "$1" 2>/dev/null | awk '{print $1}'; }
+gguf_bytes() { stat -f%z "$1" 2>/dev/null || echo 0; }
 gguf_manifest_note() {
-  # $1 = filename basename; print "[tier] tag" or "(not in manifest)"
   local name="$1" tier tag _c url _m
   [[ -f "$MANIFEST" ]] || { echo "(not in manifest)"; return; }
   while IFS='|' read -r tier tag _c url _m; do
@@ -66,13 +141,13 @@ else
   printf '  %-48s %8s  %-12s  %s\n' "FILE" "SIZE" "MMPROJ" "MANIFEST"
   printf '  %-48s %8s  %-12s  %s\n' "----" "----" "------" "--------"
 
-  # Weight GGUFs only (skip mmproj companions)
   find "$GGUF_DIR" -maxdepth 1 -name '*.gguf' -type f 2>/dev/null | sort | while read -r f; do
     name="$(basename "$f")"
     case "$name" in
       *.mmproj*.gguf|*mmproj-F16.gguf) continue ;;
     esac
     size="$(gguf_human "$f")"
+    bytes="$(gguf_bytes "$f")"
     stem="${name%.gguf}"
     mmproj="no"
     for cand in \
@@ -87,10 +162,13 @@ else
       fi
     done
     mnote="$(gguf_manifest_note "$name")"
+    # Incomplete: active-tier weight under ~2GB is almost certainly a partial download
+    if [[ "$mnote" == \[* ]] && [[ "$bytes" -lt 2000000000 ]]; then
+      mnote="$mnote ⚠ INCOMPLETE (lm pull-gguf)"
+    fi
     printf '  %-48s %8s  %-12s  %s\n' "$name" "$size" "$mmproj" "$mnote"
   done
 
-  # Orphan mmproj (no matching weight stem)
   orphan_tmp="$(mktemp)"
   find "$GGUF_DIR" -maxdepth 1 -name '*.gguf' -type f 2>/dev/null | sort | while read -r f; do
     name="$(basename "$f")"

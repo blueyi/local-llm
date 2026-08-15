@@ -31,7 +31,7 @@
 
 | 角色 | 工具 | 用途 |
 |------|------|------|
-| LLM 主引擎 | **Ollama ≥0.32.12**（`lm deploy` / `lm upgrade-ollama` 对照 GitHub latest；落后可自动装到 `/opt/homebrew/opt/ollama-upstream`） | 各档 LLM / OpenAI 兼容 API |
+| LLM 主引擎 | **Ollama ≥0.32.13**（`lm deploy` / `lm upgrade-ollama` 对照 GitHub latest；落后可自动装到 `/opt/homebrew/opt/ollama-upstream`） | 各档 LLM / OpenAI 兼容 API |
 | 文生图引擎 | **mflux**（`uv tool install mflux`） | FLUX.2 Klein / Z-Image-Turbo（MLX CLI） |
 | 辅 | **LM Studio 0.4.19+2** | GUI、手动 GGUF 加载 |
 | 可选 | `mlx-lm` | 仅 LoRA / 脚本批处理 |
