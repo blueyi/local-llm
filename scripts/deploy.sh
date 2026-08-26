@@ -218,6 +218,29 @@ reconcile() {
       printf '  \033[1;31m✗\033[0m [%s] %s (missing)\n' "$tier" "$tag"
     fi
   done < "$MANIFEST"
+  [[ -n "$ONLY_TIER" ]] && return 0
+  report_stale
+}
+
+# ---- Installed models no active tier points at ----
+report_stale() {
+  local installed retired_tags active_tags stale=0 name
+  installed="$(installed_tags)"
+  [[ -z "$installed" ]] && return 0
+  active_tags="$(awk -F'|' '$1 !~ /^#/ && $1 != "" && $1 != "retired" { print $2 }' "$MANIFEST" | xargs -n1 2>/dev/null || true)"
+  retired_tags="$(awk -F'|' '$1 == "retired" { print $2 }' "$MANIFEST")"
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    grep -qx "$name" <<< "$active_tags" && continue
+    if grep -qx "$name" <<< "$retired_tags"; then
+      printf '  \033[1;33m·\033[0m [retired] %s (installed; free space with: lm deploy --prune)\n' "$name"
+    else
+      printf '  \033[1;33m·\033[0m [extra] %s (installed but not in manifest)\n' "$name"
+    fi
+    stale=1
+  done <<< "$installed"
+  [[ "$stale" -eq 1 ]] && warn "stale models occupy disk — see notes above"
+  return 0
 }
 
 # ================= Main =================

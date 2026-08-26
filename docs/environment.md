@@ -31,16 +31,39 @@
 
 | 角色 | 工具 | 用途 |
 |------|------|------|
-| LLM 主引擎 | **Ollama ≥0.32.13**（`lm deploy` / `lm upgrade-ollama` 对照 GitHub latest；落后可自动装到 `/opt/homebrew/opt/ollama-upstream`） | 各档 LLM / OpenAI 兼容 API |
+| LLM 主引擎 | **Ollama 0.33.0**（`lm deploy` / `lm upgrade-ollama` 对照 GitHub latest；落后可自动装到 `/opt/homebrew/opt/ollama-upstream`） | 各档 LLM / OpenAI 兼容 API |
 | 文生图引擎 | **mflux**（`uv tool install mflux`） | FLUX.2 Klein / Z-Image-Turbo（MLX CLI） |
 | 辅 | **LM Studio 0.4.19+2** | GUI、手动 GGUF 加载 |
 | 可选 | `mlx-lm` | 仅 LoRA / 脚本批处理 |
 
-推荐环境变量：
+推荐环境变量（本机写在 `~/Library/LaunchAgents/homebrew.mxcl.ollama.plist` 的 `EnvironmentVariables`）：
 
 ```bash
 export OLLAMA_FLASH_ATTENTION=1
 export OLLAMA_KV_CACHE_TYPE=q8_0
+```
+
+### 上下文长度的真实生效路径（易踩）
+
+`config/models.manifest` 的 `NUM_CTX` **只作用于手动 GGUF 导入**（写进 Modelfile 的
+`PARAMETER num_ctx`）。走 `ollama pull` 装的官方 tag **不带** `num_ctx`，实际服务上下文由
+daemon 决定：
+
+| 来源 | 优先级 | 说明 |
+|------|--------|------|
+| 请求里的 `options.num_ctx` | 最高 | 客户端可控；Cursor 等 OpenAI 兼容客户端**不会**发 |
+| `OLLAMA_CONTEXT_LENGTH`（daemon 环境变量） | 中 | 全局默认；本机**未设置** |
+| Ollama 内置默认 | 兜底 | 当前 0.32.x 为 **32768** |
+
+因此本机 main / deep / fast 经 API 调用时实际都是 **32K**（`ollama ps` 的 CONTEXT 列可验证），
+而非 manifest 里 main 那行的 65536。要真正改变：
+
+```bash
+ollama ps   # 确认当前实际 CONTEXT
+# 全局抬高（会同时作用于 deep：30GB 权重 + 64K KV 逼近 48GB 上限，谨慎）
+# 在 LaunchAgent 的 EnvironmentVariables 里加 OLLAMA_CONTEXT_LENGTH
+# 单次调用抬高（推荐）
+curl http://127.0.0.1:11434/api/chat -d '{"model":"qwen3.8:27b-q4_K_M","options":{"num_ctx":65536},...}'
 ```
 
 ## API 与路径

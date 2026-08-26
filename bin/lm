@@ -19,6 +19,7 @@
 #   lm check                      # Health check + manifest reconciliation (no install)
 #   lm deploy [tier] [--force] [--yes] [--skip-ollama-upgrade]
 #                                 # Deploy LLMs; checks Ollama latest first (prompt / --yes auto-upgrade)
+#   lm deploy --prune             # Deploy, then delete retired models (confirms first)
 #   lm update                     # Recommend + update 3 tiers from remote catalog + hardware (--dry-run/--yes/--ram/--chip/--no-deploy)
 #   lm get <query>                # Fuzzy-search remote model, interactive pick, pull (--tier/--tag/--yes/--dry-run)
 #   lm pull-image <hf-repo>       # Download image-gen weights (direct pull via hf-mirror to ~/models/image-gen)

@@ -36,6 +36,7 @@ lm get <query>               # 模糊搜索远程模型，交互选择后下载�
 lm pull-image <hf-repo>      # 下载文生图权重（hf-mirror 直拉）
 
 # —— 维护 ——
+lm deploy --prune            # 清理 manifest 中 retired 但仍占盘的模型（确认提示）
 lm rm <name|tier>            # 卸载 Ollama 模型（确认提示；可用档位名）
 lm import <name> <gguf> [ctx]  # 手动 GGUF 导入 Ollama
 lm sync                        # ollama list 回写 registry

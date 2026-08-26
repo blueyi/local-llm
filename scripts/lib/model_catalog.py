@@ -509,6 +509,10 @@ def recommend_tiers(
 
     # Keep current lineup unless a challenger beats it by a clear margin
     stability = _f(policy, "STABILITY_MARGIN", 4.0)
+    # Weight of the FAMILIES/WATCH_FAMILIES order. Must outweigh the per-tier
+    # architecture bonuses, otherwise an older generation can win on shape alone
+    # (e.g. a previous-gen MoE build beating the current-gen dense one).
+    fam_weight = _f(policy, "FAMILY_PRIORITY_WEIGHT", 12.0)
 
     for tier in ("main", "deep", "fast"):
         ranked: list[tuple[float, TagInfo, FamilyInfo]] = []
@@ -519,7 +523,7 @@ def recommend_tiers(
             if s is None:
                 continue
             # Family priority: preferred list beats watch list
-            s -= pri * 3
+            s -= pri * fam_weight
             ranked.append((s, tag, meta))
         ranked.sort(key=lambda x: x[0], reverse=True)
         lo, hi = tier_window(tier, hw, policy)

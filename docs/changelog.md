@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-08-27（运行时：Ollama 0.32.13 → 0.33.0）
+
+- `lm upgrade-ollama --yes`：GitHub latest 装到 `/opt/homebrew/opt/ollama-upstream`，daemon 已重启；`docs/environment.md` 运行时版本同步。
+
+## 2026-08-26（配置合理性审计：推荐打分、对账口径、上下文口径）
+
+审计发现的三处不合理并修复（模型清单本身未改动）：
+
+- **`lm update` 会把 main 退回上一代**：`recommend_tiers` 里家族优先级权重（`pri * 3`）小于
+  `MAIN_PREFER_MOE` 的 ±16 分摆动，导致 `qwen3.6:35b-a3b-q4_K_M` 以 9.3 分优势压过
+  `qwen3.8:27b-q4_K_M`，越过 `STABILITY_MARGIN=4` 被判定为 CHANGE。
+  新增 `FAMILY_PRIORITY_WEIGHT`（默认 12，写入 `config/update-policy.conf`）；
+  `lm update --dry-run` 复验后三档均为 same。
+- **`lm check` 看不到退役模型**：`reconcile()` 只报 active 档缺失，`lm status` 却会标
+  prune candidate。补 `report_stale()`，`lm check` 现在同时列 retired / extra 及占盘提示。
+- **上下文口径与实际不符**：manifest 的 `NUM_CTX` 仅作用于手动 GGUF 导入；`ollama pull`
+  的官方 tag 不带 `num_ctx`，`OLLAMA_CONTEXT_LENGTH` 本机未设置，故各档经 API 实际都是
+  **32K**（`ollama ps` 已验证），而非文档宣称的 main 64K。
+  `docs/environment.md` 新增「上下文长度的真实生效路径」，`tiers.md` / `agent-integration.md` 同步纠正。
+- 文档：`lm deploy --prune` 之前只写在 `deploy.sh` 注释里，补进 `lm help` 与 README 维护段。
+
 ## 2026-08-16（脚本结构重构：统一 HF / GGUF 辅助入口）
 
 - 新增 `scripts/pull-hf-model.sh`，统一 image、speech、TTS 的 manifest 解析与 Hugging Face 下载；原 `pull-image-model.sh`、`pull-speech-model.sh`、`pull-tts-model.sh` 保留为兼容 wrapper。

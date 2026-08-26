@@ -27,8 +27,8 @@
 
 | 角色 | 模型 | 大小 | 建议 |
 |------|------|------|------|
-| **main** | `qwen3.8:27b-q4_K_M` | ~18GB | Agent 主力；32K–64K；最新开源代 |
-| **deep** | `qwen3.8:27b-q8_0` | ~30GB | 难题；16K–32K |
+| **main** | `qwen3.8:27b-q4_K_M` | ~18GB | Agent 主力；最新开源代 |
+| **deep** | `qwen3.8:27b-q8_0` | ~30GB | 难题；勿与其它大模型同开 |
 | **fast** | `qwen3.5:9b` | 6.6GB | 草稿（尚无更小的 3.8） |
 | **embed** | `qwen3-embedding:8b` | 4.7GB | RAG；可与大模型同开 |
 | **rerank** | `awenleven/Qwen3-Reranker-4B:Q4_K_M` | 2.5GB | 检索重排；配合 embed |
@@ -49,6 +49,9 @@ lm tts "你好" --model qwen3-tts-1.7b --voice Vivian --instruct "平静清晰"
 ```
 
 原则：一次只常驻一个 ≥18GB 大模型（main / deep / chat）；**embed / rerank / asr / tts / fast / reason** 相对灵活，但仍避免与 deep 同开。
+
+上下文：经 Ollama API 调用时各档**实际都是 32K**（daemon 默认值），manifest 的 `NUM_CTX`
+只对手动 GGUF 导入生效。抬高办法见 [environment.md](./environment.md#上下文长度的真实生效路径易踩)。
 
 ## 刻意不做 / 仍缺
 

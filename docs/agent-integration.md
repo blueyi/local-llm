@@ -34,8 +34,12 @@ curl http://127.0.0.1:11434/v1/models
 | 闲聊 / 多语言 / 创意 | chat | `gemma4:31b` |
 | RAG / 语义检索 | embed | `qwen3-embedding:8b` |
 
-> deep 档 27B 稠密 Q8（~30GB）：上下文控制在 **16K–32K**，不与其它大模型同开。
-> main 档 ~18GB 可放心开 64K 上下文。
+> deep 档 27B 稠密 Q8（~30GB）：不与其它大模型同开。
+>
+> **实际上下文 = 32K**（Ollama daemon 默认；`OLLAMA_CONTEXT_LENGTH` 本机未设置，
+> Cursor 等客户端也不会发 `options.num_ctx`）。manifest 里 main 的 `65536` 只对
+> 手动 GGUF 导入生效。main（~18GB）内存上有空间开到 64K，但需显式配置——
+> 见 [environment.md 上下文长度的真实生效路径](./environment.md#上下文长度的真实生效路径易踩)。
 
 ## 配置片段
 
