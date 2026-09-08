@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-08（`lm init`：按本机 Mac 配置初始化清单）
+
+- 新增 `lm init`：探测 Apple Silicon（芯片 / 统一内存 / 可选 GPU 核数），命中 [`config/hardware-profiles.tsv`](../config/hardware-profiles.tsv) 则使用命名 lineup；未命中再按 [`config/init-policy.conf`](../config/init-policy.conf) 远程打分（main/deep/fast 复用现有 `recommend_tiers`，ABS 上限随 RAM 缩放）。
+- `full-48` 与当前 v2.9 四份 manifest 逐字段一致；本机 M5 Max 48GB 走 `m5-max-48`，空转幂等。
+- **不改** `lm update` / `lm deploy` / `lm get`：`update-policy.conf` 与打分公式保持原样。
+- 文档：[docs/hardware-profiles.md](./hardware-profiles.md)；新机安装改为先 `lm init` 再 `lm deploy`。
+
 ## 2026-08-27（运行时：Ollama 0.32.13 → 0.33.0）
 
 - `lm upgrade-ollama --yes`：GitHub latest 装到 `/opt/homebrew/opt/ollama-upstream`，daemon 已重启；`docs/environment.md` 运行时版本同步。

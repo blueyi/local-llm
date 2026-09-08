@@ -13,7 +13,7 @@
 3. `docs/tiers.md` — 三档选型与切换
 4. `docs/models-registry.md` — 已装模型活文档
 
-按需再读：`docs/environment.md`（硬件+运行时）、`docs/agent-integration.md`、`docs/image-gen.md`、`docs/operations.md`。
+按需再读：`docs/environment.md`（硬件+运行时）、`docs/hardware-profiles.md`（`lm init` 多机型）、`docs/agent-integration.md`、`docs/image-gen.md`、`docs/operations.md`。
 
 ## 必须同步更新
 
@@ -51,6 +51,7 @@
 
 ```bash
 lm status / check                 # 总览 / 体检+对账
+lm init                           # 探测本机 Mac → 精确表或打分 → 写清单（新机；--dry-run/--deploy/--stack）
 lm deploy [tier] [--force] [--yes] [--skip-ollama-upgrade]
                                       # 部署（缺则拉；先检查 Ollama 是否最新并提示升级）
 lm update                         # 远程目录+硬件推荐三档 → 确认后写 manifest 并 deploy
@@ -77,5 +78,6 @@ lm sync                           # registry 回写
 升级文生图 = 改 image-models.manifest → `lm pull-image`。
 升级 ASR = 改 speech-models.manifest → `lm pull-speech`。
 升级 TTS = 改 tts-models.manifest → `lm pull-tts`。
-推荐策略（非安装 SSOT）在 `config/update-policy.conf`。
+新机初始化 = `lm init`（精确表 `config/hardware-profiles.tsv` + `config/lineups.tsv`；未命中才用 `config/init-policy.conf` 打分）。
+推荐策略（非安装 SSOT）：`lm update` / `lm get` 用 `config/update-policy.conf`；`lm init` fallback 用 `config/init-policy.conf`。
 其他文档只做说明，**不要在脚本里硬编码模型名**。

@@ -14,10 +14,13 @@ uv tool install mflux                # 文生图（可选）
 # PATH via my-utils (config/resetrc.bash prepends ~/workspace/local-llm/bin)
 # Without my-utils: ln -sfn ~/workspace/local-llm/bin/lm ~/.local/bin/lm
 
-# 3. 按 manifest 部署
-lm deploy            # 全部三档 LLM（断点续传，可重入）
-lm pull-image Runpod/FLUX.2-klein-4B-mflux-4bit      # 文生图主力
-lm pull-image filipstrand/Z-Image-Turbo-mflux-4bit   # 备选（写实向）
+# 3. 按本机硬件初始化清单，再部署
+lm init --dry-run    # 看精确表命中（如 m5-max-48）或 fallback 方案
+lm init --deploy      # 写清单 + lm deploy；并按 lineup pull 图/ASR/TTS
+# 只要写清单、稍后手动拉权重：lm init && lm deploy
+# 48GB 示例（与 full-48 清单一致；其他机型以 lm init 写入的 manifest 为准）：
+# lm pull-image Runpod/FLUX.2-klein-4B-mflux-4bit
+# lm pull-image filipstrand/Z-Image-Turbo-mflux-4bit
 
 # 4. 验证
 lm check && lm test fast && lm image "hello world test"

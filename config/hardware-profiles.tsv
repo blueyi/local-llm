@@ -1,0 +1,45 @@
+# =============================================================
+# hardware-profiles.tsv — exact Mac SKU → named lineup (lm init)
+# =============================================================
+# NOT an install SSOT (that remains config/*.manifest).
+# Exact match key: (family, variant, mem_gb bucket). No nearest-RAM fallback.
+# chip_regex: optional extra check against the probed chip string.
+# gpu_cores: optional; compared only when both the row and the probe have a value.
+#
+# family: m3|m4|m5   variant: base|pro|max|ultra   mem_gb: advertised unified memory
+# M1/M2 are intentionally absent → lm init uses the scoring fallback.
+# =============================================================
+# id|family|variant|mem_gb|chip_regex|gpu_cores|lineup
+m3-16|m3|base|16|Apple M3$||lite-16
+m3-24|m3|base|24|Apple M3$||std-24
+m3-pro-18|m3|pro|18|Apple M3 Pro||lite-16
+m3-pro-36|m3|pro|36|Apple M3 Pro||std-36
+m3-max-36|m3|max|36|Apple M3 Max||std-36
+m3-max-48|m3|max|48|Apple M3 Max||full-48
+m3-max-64|m3|max|64|Apple M3 Max||plus-64
+m3-ultra-64|m3|ultra|64|Apple M3 Ultra||plus-64
+m3-ultra-96|m3|ultra|96|Apple M3 Ultra||ultra-128
+m3-ultra-128|m3|ultra|128|Apple M3 Ultra||ultra-128
+m3-ultra-192|m3|ultra|192|Apple M3 Ultra||ultra-128
+m4-16|m4|base|16|Apple M4$||lite-16
+m4-24|m4|base|24|Apple M4$||std-24
+m4-32|m4|base|32|Apple M4$||std-32
+m4-pro-24|m4|pro|24|Apple M4 Pro||std-24
+m4-pro-48|m4|pro|48|Apple M4 Pro||full-48
+m4-max-36|m4|max|36|Apple M4 Max||std-36
+m4-max-48|m4|max|48|Apple M4 Max||full-48
+m4-max-64|m4|max|64|Apple M4 Max||plus-64
+m4-max-128|m4|max|128|Apple M4 Max||ultra-128
+m4-ultra-64|m4|ultra|64|Apple M4 Ultra||plus-64
+m4-ultra-128|m4|ultra|128|Apple M4 Ultra||ultra-128
+m4-ultra-192|m4|ultra|192|Apple M4 Ultra||ultra-128
+m5-16|m5|base|16|Apple M5$||lite-16
+m5-24|m5|base|24|Apple M5$||std-24
+m5-pro-24|m5|pro|24|Apple M5 Pro||std-24
+m5-pro-48|m5|pro|48|Apple M5 Pro||full-48
+m5-max-48|m5|max|48|Apple M5 Max||full-48
+m5-max-64|m5|max|64|Apple M5 Max||plus-64
+m5-max-128|m5|max|128|Apple M5 Max||ultra-128
+m5-ultra-64|m5|ultra|64|Apple M5 Ultra||plus-64
+m5-ultra-128|m5|ultra|128|Apple M5 Ultra||ultra-128
+m5-ultra-192|m5|ultra|192|Apple M5 Ultra||ultra-128

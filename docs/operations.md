@@ -28,6 +28,16 @@ lm upgrade-ollama                # 单独检查/升级运行时
 lm upgrade-ollama --check-only   # 只报告（exit 2=落后）
 ```
 
+## 新机初始化
+
+```bash
+lm init --dry-run            # 探测芯片/内存，打印 profile 或 fallback 方案
+lm init                      # 确认后写 config/*.manifest（默认不 deploy）
+lm init --deploy             # 写完后 lm deploy 并 pull 图/语音权重
+```
+
+精确表与 lineup 见 [hardware-profiles.md](./hardware-profiles.md)。已初始化的机器日常换代用下面的 `lm update`（只动 main/deep/fast）。
+
 ## 更新模型
 
 ### 推荐：硬件感知自动更新三档

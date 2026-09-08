@@ -1,0 +1,91 @@
+# =============================================================
+# lineups.tsv — named lineups for lm init (NOT install SSOT)
+# =============================================================
+# Columns by stack:
+#   llm:   lineup|stack|role|model|num_ctx|hf_gguf|mmproj
+#   image: lineup|stack|role|model|hf_repo|gen_cli|edit_cli|base_model_arg|steps
+#   asr:   lineup|stack|role|model|hf_repo|engine
+#   tts:   lineup|stack|role|model|hf_repo|engine|default_voice
+# Omit a role entirely to leave it out of the generated manifest (no placeholder tag).
+# full-48 must match the committed v2.9 config/*.manifest active rows.
+# =============================================================
+
+# ---- lite-16 (16/18GB): one small daily model; no independent deep/chat/reason ----
+lite-16|llm|main|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+lite-16|llm|embed|qwen3-embedding:4b|8192||
+lite-16|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+lite-16|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
+lite-16|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
+lite-16|tts|primary|kokoro-82m|mlx-community/Kokoro-82M-bf16|mlx-audio|af_heart
+
+# ---- std-24 (24GB): 9B daily; no 27B / 31B ----
+std-24|llm|main|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+std-24|llm|embed|qwen3-embedding:8b|8192||
+std-24|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+std-24|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
+std-24|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
+std-24|tts|primary|kokoro-82m|mlx-community/Kokoro-82M-bf16|mlx-audio|af_heart
+
+# ---- std-32 (32GB): 27B Q4 daily (tight); q8 deep omitted; chat 31B omitted ----
+std-32|llm|main|qwen3.8:27b-q4_K_M|65536|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
+std-32|llm|fast|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+std-32|llm|embed|qwen3-embedding:8b|8192||
+std-32|llm|reason|gpt-oss:20b|65536||
+std-32|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+std-32|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
+std-32|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
+std-32|tts|primary|kokoro-82m|mlx-community/Kokoro-82M-bf16|mlx-audio|af_heart
+
+# ---- std-36 (36GB): 27B Q4 main; Q8 deep exclusive; image+TTS-alt on ----
+std-36|llm|main|qwen3.8:27b-q4_K_M|65536|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
+std-36|llm|deep|qwen3.8:27b-q8_0|32768|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q8_0.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
+std-36|llm|fast|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+std-36|llm|embed|qwen3-embedding:8b|8192||
+std-36|llm|chat|gemma4:31b|65536||
+std-36|llm|reason|gpt-oss:20b|65536||
+std-36|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+std-36|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
+std-36|image|alt|z-image-turbo|filipstrand/Z-Image-Turbo-mflux-4bit|mflux-generate-z-image-turbo|||9
+std-36|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
+std-36|tts|primary|kokoro-82m|mlx-community/Kokoro-82M-bf16|mlx-audio|af_heart
+std-36|tts|alt|qwen3-tts-1.7b|mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16|mlx-audio|Serena
+
+# ---- full-48 (48GB): current v2.9 committed manifests ----
+full-48|llm|main|qwen3.8:27b-q4_K_M|65536|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
+full-48|llm|deep|qwen3.8:27b-q8_0|32768|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q8_0.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
+full-48|llm|fast|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+full-48|llm|embed|qwen3-embedding:8b|8192||
+full-48|llm|chat|gemma4:31b|65536||
+full-48|llm|reason|gpt-oss:20b|65536||
+full-48|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+full-48|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
+full-48|image|alt|z-image-turbo|filipstrand/Z-Image-Turbo-mflux-4bit|mflux-generate-z-image-turbo|||9
+full-48|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
+full-48|tts|primary|kokoro-82m|mlx-community/Kokoro-82M-bf16|mlx-audio|af_heart
+full-48|tts|alt|qwen3-tts-1.7b|mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16|mlx-audio|Serena
+
+# ---- plus-64 (64GB): main Q8; still no 70B+ as a default deep ----
+plus-64|llm|main|qwen3.8:27b-q8_0|32768|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q8_0.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
+plus-64|llm|fast|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+plus-64|llm|embed|qwen3-embedding:8b|8192||
+plus-64|llm|chat|gemma4:31b|65536||
+plus-64|llm|reason|gpt-oss:20b|65536||
+plus-64|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+plus-64|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
+plus-64|image|alt|z-image-turbo|filipstrand/Z-Image-Turbo-mflux-4bit|mflux-generate-z-image-turbo|||9
+plus-64|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
+plus-64|tts|primary|kokoro-82m|mlx-community/Kokoro-82M-bf16|mlx-audio|af_heart
+plus-64|tts|alt|qwen3-tts-1.7b|mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16|mlx-audio|Serena
+
+# ---- ultra-128 (96GB+): 120B-class exclusive deep; main stays 27B Q8 ----
+ultra-128|llm|main|qwen3.8:27b-q8_0|32768|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q8_0.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
+ultra-128|llm|deep|gpt-oss:120b|32768||
+ultra-128|llm|fast|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+ultra-128|llm|embed|qwen3-embedding:8b|8192||
+ultra-128|llm|chat|gemma4:31b|65536||
+ultra-128|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+ultra-128|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
+ultra-128|image|alt|z-image-turbo|filipstrand/Z-Image-Turbo-mflux-4bit|mflux-generate-z-image-turbo|||9
+ultra-128|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
+ultra-128|tts|primary|kokoro-82m|mlx-community/Kokoro-82M-bf16|mlx-audio|af_heart
+ultra-128|tts|alt|qwen3-tts-1.7b|mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16|mlx-audio|Serena

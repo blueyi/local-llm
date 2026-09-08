@@ -1,6 +1,6 @@
 # 本地模型场景矩阵与选型
 
-统一以 **可本地跑在 M5 Max / 48GB** 为前提。安装依据：
+当前已提交清单对齐 **M5 Max / 48GB**（`lm init` lineup `full-48`）。其他机型先 `lm init` 再看本页；安装依据：
 - LLM/RAG：`config/models.manifest`
 - 文生图：`config/image-models.manifest`
 - 语音 ASR：`config/speech-models.manifest`
