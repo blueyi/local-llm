@@ -31,3 +31,31 @@ require_cmd() {
   local cmd="$1" hint="${2:-$1}"
   command -v "$cmd" >/dev/null 2>&1 || { err "$hint"; return 1; }
 }
+
+# Known LLM tier names (roles in config/models.manifest). A known tier that is
+# absent from the manifest means this machine's lineup omits it — that is an
+# error, NOT a tag to pass through to ollama (which would try to pull a
+# nonexistent model named e.g. "deep").
+KNOWN_LLM_TIERS="main deep fast embed chat reason rerank"
+
+is_known_llm_tier() { [[ " $KNOWN_LLM_TIERS " == *" $1 "* ]]; }
+
+# resolve_llm_tag <name> [manifest]
+# stdout: ollama tag. Tier present -> its tag; known-but-absent tier ->
+# guidance on stderr + return 1; anything else -> echoed as-is (raw tag).
+resolve_llm_tag() {
+  local name="$1" manifest="${2:-${ROOT:?ROOT not set}/config/models.manifest}" tag
+  tag="$(awk -F'|' -v k="$name" '$1==k {print $2; exit}' "$manifest" 2>/dev/null)"
+  if [[ -n "$tag" ]]; then
+    echo "$tag"
+    return 0
+  fi
+  if is_known_llm_tier "$name"; then
+    err "tier '$name' is not listed in config/models.manifest (this lineup omits it)"
+    echo "Available tiers:" >&2
+    awk -F'|' '$1=="main"||$1=="deep"||$1=="fast"||$1=="embed"||$1=="chat"||$1=="reason"||$1=="rerank" {printf "  %-7s -> %s\n", $1, $2}' "$manifest" >&2
+    echo "Or pass a full Ollama tag, e.g.: lm run qwen3.5:9b" >&2
+    return 1
+  fi
+  echo "$name"
+}

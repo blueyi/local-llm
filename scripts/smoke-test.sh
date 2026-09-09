@@ -30,6 +30,7 @@
 # =============================================================
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/lib/common.sh"
 MANIFEST="$ROOT/config/models.manifest"
 IMG_MANIFEST="$ROOT/config/image-models.manifest"
 SPEECH_MANIFEST="$ROOT/config/speech-models.manifest"
@@ -228,12 +229,12 @@ case "$MODEL" in
     test_tts_one; exit $? ;;
 esac
 
-## Role name -> manifest tag
+## Role name -> manifest tag (known-but-removed tiers fail with guidance)
 ROLE=""
 if grep -qE "^$MODEL\|" "$MANIFEST" 2>/dev/null; then
   ROLE="$MODEL"
-  MODEL="$(grep -E "^$MODEL\|" "$MANIFEST" | head -1 | cut -d'|' -f2)"
 fi
+MODEL="$(resolve_llm_tag "$MODEL" "$MANIFEST")" || exit 1
 
 case "$ROLE" in
   embed)  test_embed_one "$MODEL" "$PROMPT" ;;

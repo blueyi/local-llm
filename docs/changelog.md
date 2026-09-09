@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-09（tier 解析守卫：已移除档不再误透传 ollama）
+
+- `scripts/lib/common.sh` 新增 `resolve_llm_tag`：档名命中清单→对应 tag；**已知但被本机 lineup
+  移除的档**（如 lite-16 无 deep/fast/chat/reason）→ 明确报错并列出可用档；其余字符串原样作为
+  ollama tag 透传。修复 `lm run deep` 被透传为 `ollama run deep` 报
+  "pull model manifest: file does not exist"。
+- 接入 `bin/lm run`、`smoke-test.sh`、`rm-model.sh`；顺带修复 `lm rm <tier>` 的隐性 bug
+  （`manifest_value` 按第 2 列匹配导致档名解析为空）。
+
 ## 2026-09-09（跨机路径与权重根目录引导）
 
 - 仓库跨机约定路径统一为 **`~/workspace/repos/local-llm`**（旧 `~/workspace/local-llm` 仅作 my-utils

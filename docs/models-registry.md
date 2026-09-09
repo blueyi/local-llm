@@ -30,6 +30,6 @@
 NAME                                  ID              SIZE      MODIFIED    
 awenleven/Qwen3-Reranker-4B:Q4_K_M    086092f9af6f    2.5 GB    3 hours ago    
 qwen3-embedding:4b                    df5bd2e3c74c    2.5 GB    3 hours ago    
-qwen3.5:9b                            6488c96fa5fa    6.6 GB    3 hours ago    
+qwen3.5:9b                            6488c96fa5fa    6.6 GB    4 hours ago    
 ```
 <!-- END OLLAMA LIST -->

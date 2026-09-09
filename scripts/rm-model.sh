@@ -46,11 +46,9 @@ fi
 
 command -v ollama >/dev/null 2>&1 || { echo "ERROR: ollama not installed"; exit 1; }
 
-# Resolve tier name -> manifest tag
-TAG="$NAME"
-if [[ -f "$MANIFEST" ]] && grep -qE "^${NAME}\|" "$MANIFEST" 2>/dev/null; then
-  TAG="$(manifest_value "$MANIFEST" "$NAME" 2)"
-fi
+# Resolve tier name -> manifest tag (also fixes: tier lookup is column 1;
+# known-but-removed tiers fail with guidance; raw tags pass through)
+TAG="$(resolve_llm_tag "$NAME" "$MANIFEST")" || exit 1
 
 if ! ollama list 2>/dev/null | awk 'NR>1{print $1}' | grep -qx "$TAG"; then
   err "model not installed: $TAG"

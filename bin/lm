@@ -42,6 +42,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")/.." && pwd)"
 S="$ROOT/scripts"
+source "$ROOT/scripts/lib/common.sh"
 
 usage() { grep -E '^#( |=)' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
 
@@ -50,10 +51,9 @@ case "$CMD" in
   status)      exec "$S/status.sh" "$@" ;;
   run)
     TAG="${1:-main}"
-    # Tier name -> manifest tag; otherwise pass through to ollama as-is
-    if grep -qE "^$TAG\|" "$ROOT/config/models.manifest" 2>/dev/null; then
-      TAG="$(grep -E "^$TAG\|" "$ROOT/config/models.manifest" | head -1 | cut -d'|' -f2)"
-    fi
+    # Tier name -> manifest tag; unknown names pass through to ollama as-is.
+    # Known-but-removed tiers (e.g. deep on lite-16) fail with guidance.
+    TAG="$(resolve_llm_tag "$TAG")" || exit 1
     exec ollama run "$TAG" ;;
   test)        exec "$S/smoke-test.sh" "$@" ;;
   image)       exec "$S/gen-image.sh" "$@" ;;
