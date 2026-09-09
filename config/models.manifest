@@ -25,17 +25,13 @@
 # ---- Core coding/agent tiers (v2.9 — Qwen3.8 lineup, 2026-08-15) ----
 # main/deep: Qwen3.8-27B dense (latest open gen; no 3.8 MoE yet on Ollama)
 # fast: no smaller 3.8 — keep Qwen3.5-9B multimodal draft
-main|qwen3.8:27b-q4_K_M|65536|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
-deep|qwen3.8:27b-q8_0|32768|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-Q8_0.gguf|https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/mmproj-F16.gguf
-fast|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+main|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
 
 # ---- Category coverage ----
 # embed: upgrade 4b → 8b (still small; better retrieval)
-embed|qwen3-embedding:8b|8192||
+embed|qwen3-embedding:4b|8192||
 # chat: upgrade gemma4 26b → 31b (stronger creative/multilingual; still ≤20GB)
-chat|gemma4:31b|65536||
 # reason: gpt-oss:20b remains best fit (120b ~65GB exceeds 48GB)
-reason|gpt-oss:20b|65536||
 # rerank: no newer public Ollama pin; keep Qwen3-Reranker-4B
 rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
 

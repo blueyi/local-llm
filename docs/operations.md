@@ -24,17 +24,22 @@ lm rm <name> --yes           # 跳过确认（脚本用）
 ```bash
 lm deploy --yes                  # 落后时不询问，直接升级 Ollama 再部署
 lm deploy --skip-ollama-upgrade  # 跳过版本检查
-lm upgrade-ollama                # 单独检查/升级运行时
-lm upgrade-ollama --check-only   # 只报告（exit 2=落后）
+lm upgrade-ollama                # 单独检查/安装/升级运行时（未装则提示安装）
+lm upgrade-ollama --check-only   # 只报告（exit 2=落后，3=未安装）
 ```
 
 ## 新机初始化
 
 ```bash
-lm init --dry-run            # 探测芯片/内存，打印 profile 或 fallback 方案
-lm init                      # 确认后写 config/*.manifest（默认不 deploy）
+lm init --dry-run            # 依赖报告 + 探测芯片/内存，打印 profile 或 fallback 方案
+lm init                      # 先检查软件依赖（缺 ollama/mflux/mlx-* 时提示自动安装）→ 确认后写 config/*.manifest（默认不 deploy）
 lm init --deploy             # 写完后 lm deploy 并 pull 图/语音权重
+lm init --skip-deps          # 跳过依赖检查（CI / 只改清单）
 ```
+
+依赖检查只覆盖引擎层（ollama / mflux / mlx-whisper / mlx-audio / espeak-ng），按 `--stack`
+范围裁剪；模型权重仍由 manifest 驱动。Ollama 缺失时走 `lm upgrade-ollama` 的全新安装路径
+（GitHub latest → `/opt/homebrew/opt/ollama-upstream` + LaunchAgent）。
 
 精确表与 lineup 见 [hardware-profiles.md](./hardware-profiles.md)。已初始化的机器日常换代用下面的 `lm update`（只动 main/deep/fast）。
 

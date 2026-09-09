@@ -2,16 +2,20 @@
 # =============================================================
 # init-models.sh — hardware-driven manifest initialization
 # =============================================================
-# Probe this Mac, match an exact SKU in config/hardware-profiles.tsv,
+# Phase 0: check software dependencies (scripts/lib/deps.sh); missing
+#   engines (ollama / mflux / mlx-whisper / mlx-audio / espeak-ng) can be
+#   auto-installed after a prompt, then the flow continues.
+# Then: probe this Mac, match an exact SKU in config/hardware-profiles.tsv,
 # or fall back to remote scoring (init-policy.conf). Writes config/*.manifest.
 # Does not change lm update / lm deploy / lm get behavior.
 #
 # Usage:
-#   lm init                     # probe → match or score → confirm → write manifests
-#   lm init --dry-run           # print hardware + plan only
-#   lm init --yes               # skip confirmation
+#   lm init                     # deps → probe → match or score → confirm → write manifests
+#   lm init --dry-run           # print deps + hardware + plan only (no install, no writes)
+#   lm init --yes               # skip confirmations (also auto-installs missing deps)
 #   lm init --deploy            # after write, lm deploy (+ pull image/asr/tts)
 #   lm init --stack llm          # only models.manifest (default: all)
+#   lm init --skip-deps          # skip the dependency check phase
 #   lm init --ram 48 --chip "Apple M5 Max"
 #
 # Profiles: config/hardware-profiles.tsv + config/lineups.tsv
@@ -22,12 +26,14 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/scripts/lib/common.sh"
+source "$ROOT/scripts/lib/deps.sh"
 HW="$ROOT/scripts/lib/hw_profiles.py"
 CHANGELOG="$ROOT/docs/changelog.md"
 
 DRY_RUN=0
 ASSUME_YES=0
 DO_DEPLOY=0
+SKIP_DEPS=0
 RAM=""
 CHIP=""
 STACK="all"
@@ -37,6 +43,7 @@ while [[ $# -gt 0 ]]; do
     --dry-run) DRY_RUN=1; shift ;;
     --yes|-y) ASSUME_YES=1; shift ;;
     --deploy) DO_DEPLOY=1; shift ;;
+    --skip-deps) SKIP_DEPS=1; shift ;;
     --stack) STACK="${2:-}"; shift 2 ;;
     --stack=*) STACK="${1#--stack=}"; shift ;;
     --ram) RAM="${2:-}"; shift 2 ;;
@@ -50,6 +57,20 @@ done
 
 command -v python3 >/dev/null 2>&1 || { err "python3 required"; exit 1; }
 [[ -f "$HW" ]] || { err "missing $HW"; exit 1; }
+
+# ---- Phase 0: software dependencies (engines, not weights) ----
+if [[ "$SKIP_DEPS" -eq 1 ]]; then
+  warn "skipped dependency check (--skip-deps)"
+else
+  DEP_STACKS=()
+  if [[ "$STACK" == "all" ]]; then
+    DEP_STACKS=(llm image asr tts)
+  else
+    IFS=',' read -ra DEP_STACKS <<< "$STACK"
+  fi
+  DEPS_ASSUME_YES="$ASSUME_YES" DEPS_DRY_RUN="$DRY_RUN" \
+    deps_ensure "${DEP_STACKS[@]}" || warn "dependency check incomplete — continuing init"
+fi
 
 PLAN_ARGS=(plan --stack "$STACK")
 [[ -n "$RAM" ]] && PLAN_ARGS+=(--ram "$RAM")

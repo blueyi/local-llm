@@ -51,7 +51,7 @@
 
 ```bash
 lm status / check                 # 总览 / 体检+对账
-lm init                           # 探测本机 Mac → 精确表或打分 → 写清单（新机；--dry-run/--deploy/--stack）
+lm init                           # 先检查依赖（缺 ollama/mflux/mlx-* 提示自动安装）→ 探测本机 Mac → 精确表或打分 → 写清单（新机；--dry-run/--deploy/--stack/--skip-deps）
 lm deploy [tier] [--force] [--yes] [--skip-ollama-upgrade]
                                       # 部署（缺则拉；先检查 Ollama 是否最新并提示升级）
 lm update                         # 远程目录+硬件推荐三档 → 确认后写 manifest 并 deploy
@@ -63,7 +63,7 @@ lm pull-image <hf-repo>           # 文生图权重
 lm pull-speech [hf-repo]          # ASR 权重（hf-mirror → ~/models/speech）
 lm pull-tts [hf-repo]             # TTS 权重（hf-mirror → ~/models/tts）
 lm pull-gguf [tier...]            # 清单内 HF GGUF → ~/models/gguf（给 LM Studio）
-lm upgrade-ollama [--yes]         # 检查/升级 Ollama 到 GitHub latest（darwin）
+lm upgrade-ollama [--yes]         # 检查/全新安装/升级 Ollama 到 GitHub latest（darwin；--check-only exit 3=未安装）
 lm rm <name|tier> [--yes]         # 卸载 Ollama 模型（确认提示；等同 ollama rm）
 lm import <name> <gguf> [ctx]     # 手动 GGUF 导入 Ollama
 lm sync                           # registry 回写

@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-09-09（`lm init` 前置依赖检查与自动安装）
+
+- `lm init` 新增 **Phase 0 软件依赖检查**（`scripts/lib/deps.sh`）：按 `--stack` 范围检查
+  ollama / mflux / mlx-whisper / mlx-audio / espeak-ng，缺失时提示「是否自动安装」，
+  装完继续探测与写清单；`--yes` 直接自动装，`--dry-run` 只报告，`--skip-deps` 跳过，
+  非交互 stdin 不询问仅告警。
+- `lm upgrade-ollama` 支持**全新安装**：未装 Ollama 时不再报错退出，而是拉 GitHub latest
+  提示/直接安装（`--check-only` 新增 exit 3=未安装）；`install_darwin_release` 增加
+  Homebrew 前缀守卫。`lm deploy` 预检因此也能在新机上引导安装。
+- 依赖→安装映射：ollama→`upgrade-ollama.sh --upgrade`；mflux/mlx-whisper/mlx-audio→
+  `uv tool install`；espeak-ng→`brew install`（Kokoro 英语音素）。
+- 文档：`docs/hardware-profiles.md` / `docs/operations.md` / `docs/install.md` 同步。
+
+## 2026-09-09 (lm init: profile:m5-16)
+
+- `lm init` applied (profile:m5-16): llm.main: qwen3.8:27b-q4_K_M -> qwen3.5:9b; llm.deep: qwen3.8:27b-q8_0 -> (removed); llm.fast: qwen3.5:9b -> (removed); llm.embed: qwen3-embedding:8b -> qwen3-embedding:4b; llm.chat: gemma4:31b -> (removed); llm.reason: gpt-oss:20b -> (removed); image.alt: z-image-turbo -> (removed); tts.alt: qwen3-tts-1.7b -> (removed)
+- Install SSOT: `config/*.manifest`; profiles: `config/hardware-profiles.tsv`
+
+
 ## 2026-09-08（`lm init`：按本机 Mac 配置初始化清单）
 
 - 新增 `lm init`：探测 Apple Silicon（芯片 / 统一内存 / 可选 GPU 核数），命中 [`config/hardware-profiles.tsv`](../config/hardware-profiles.tsv) 则使用命名 lineup；未命中再按 [`config/init-policy.conf`](../config/init-policy.conf) 远程打分（main/deep/fast 复用现有 `recommend_tiers`，ABS 上限随 RAM 缩放）。

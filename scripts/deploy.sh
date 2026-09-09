@@ -15,8 +15,9 @@
 #   ./scripts/deploy.sh --skip-ollama-upgrade  # skip latest-version check
 #   ./scripts/deploy.sh main --gguf    # force the manual GGUF download path (skip ollama pull)
 #
-# Before install: compare local Ollama to GitHub latest; prompt to upgrade if behind
-# (new models like qwen3.8 often need a newer engine than brew stable).
+# Before install: compare local Ollama to GitHub latest; prompt to upgrade if
+# behind, or offer a fresh install when missing (new models like qwen3.8 often
+# need a newer engine than brew stable).
 #
 # Install strategy (per model):
 #   1) Prefer `ollama pull <tag>`     — native resumable download, simplest
@@ -84,7 +85,7 @@ ensure_ollama_runtime() {
 # ---- Environment health check ----
 preflight() {
   log "Environment health check"
-  command -v ollama >/dev/null 2>&1 || { err "ollama not installed — see docs/install.md"; exit 1; }
+  command -v ollama >/dev/null 2>&1 || { err "ollama not installed — auto-install: lm upgrade-ollama --upgrade (or see docs/install.md)"; exit 1; }
   ok "ollama $(ollama --version 2>/dev/null | head -1)"
   if ! curl -s -m 5 -o /dev/null "http://127.0.0.1:11434/api/tags"; then
     warn "Ollama daemon not responding, trying to start it..."

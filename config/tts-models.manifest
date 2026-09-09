@@ -19,4 +19,3 @@
 # =============================================================
 
 primary|kokoro-82m|mlx-community/Kokoro-82M-bf16|mlx-audio|af_heart
-alt|qwen3-tts-1.7b|mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16|mlx-audio|Serena

@@ -7,6 +7,9 @@
 
 ## 决策
 
+0. **依赖检查**（[`scripts/lib/deps.sh`](../scripts/lib/deps.sh)）：按 `--stack` 范围检查
+   ollama / mflux / mlx-whisper / mlx-audio / espeak-ng；缺失时提示自动安装，装完继续。
+   `--yes` 免询问自动装；`--dry-run` 只报告；`--skip-deps` 跳过；非交互 stdin 仅告警。
 1. 探测芯片、统一内存、可选 GPU 核数 / Model Identifier
 2. **精确匹配** `(family, variant, mem_bucket)` 对照 [`config/hardware-profiles.tsv`](../config/hardware-profiles.tsv)
 3. 命中 → 使用命名 lineup（[`config/lineups.tsv`](../config/lineups.tsv)），离线、确定
@@ -18,10 +21,11 @@
 ## 命令
 
 ```bash
-lm init --dry-run                 # 只看硬件 + 方案
-lm init                           # 确认后写清单
-lm init --yes                     # 跳过确认
+lm init --dry-run                 # 只看依赖 + 硬件 + 方案（不安装、不写清单）
+lm init                           # 依赖检查（缺则提示安装）→ 确认后写清单
+lm init --yes                     # 跳过确认（缺失依赖也直接自动安装）
 lm init --stack llm               # 只写 models.manifest
+lm init --skip-deps               # 跳过依赖检查阶段
 lm init --deploy                 # 写完后部署
 lm init --ram 48 --chip "Apple M5 Max"   # 覆盖探测
 ```

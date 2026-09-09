@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # =============================================================
-# upgrade-ollama.sh — check / upgrade Ollama to GitHub latest
+# upgrade-ollama.sh — check / install / upgrade Ollama to GitHub latest
 # =============================================================
-# Used by `lm deploy` (preflight) and `lm upgrade-ollama`.
+# Used by `lm init` (dependency phase), `lm deploy` (preflight) and
+# `lm upgrade-ollama`. Handles fresh machines: when Ollama is missing
+# entirely, offers to install the latest release (same install target).
 #
 # Usage:
-#   lm upgrade-ollama                 # check; if outdated, prompt then upgrade
-#   lm upgrade-ollama --yes           # upgrade without prompt when outdated
-#   lm upgrade-ollama --check-only    # report only (exit 0=current, 2=outdated)
-#   lm upgrade-ollama --upgrade       # force upgrade to latest (no prompt)
+#   lm upgrade-ollama                 # check; if missing/outdated, prompt then install/upgrade
+#   lm upgrade-ollama --yes           # install/upgrade without prompt
+#   lm upgrade-ollama --check-only    # report only (exit 0=current, 2=outdated, 3=not installed)
+#   lm upgrade-ollama --upgrade       # force install/upgrade to latest (no prompt)
 #
 # Install target (darwin): /opt/homebrew/opt/ollama-upstream
 #   (brew formula often lags behind ollama.com / GitHub releases)
@@ -141,6 +143,13 @@ install_darwin_release() {
   local ver="$1"
   local tag="v${ver}"
   local tmp tgz sum expected
+
+  # Install target + PATH symlink both live under the Homebrew prefix
+  if [[ ! -d /opt/homebrew/bin ]]; then
+    err "Homebrew prefix /opt/homebrew missing — install Homebrew first, or install Ollama manually: https://ollama.com/download"
+    return 1
+  fi
+
   tmp="$(mktemp -d /tmp/ollama-upgrade.XXXXXX)"
   tgz="$tmp/ollama-darwin.tgz"
 
@@ -212,18 +221,38 @@ do_upgrade() {
 
 # ---- main ----
 CURRENT="$(current_ollama_version || true)"
-if [[ -z "$CURRENT" ]]; then
-  err "cannot detect local Ollama version (is it installed?)"
-  exit 1
-fi
 
 log "Checking latest Ollama release (GitHub)..."
-LATEST="$(fetch_latest_version)" || {
-  warn "could not fetch latest version from GitHub — continuing with local $CURRENT"
+LATEST="$(fetch_latest_version || true)"
+
+# Fresh-install path: no local binary and no daemon answering
+if [[ -z "$CURRENT" ]]; then
+  if [[ -z "$LATEST" || ! "$LATEST" =~ ^[0-9]+\.[0-9]+ ]]; then
+    err "Ollama not installed and latest release unknown (offline?) — install manually: https://ollama.com/download"
+    exit 1
+  fi
+  warn "Ollama is not installed (latest: $LATEST)"
+  case "$MODE" in
+    check-only) exit 3 ;;
+    yes|upgrade) do_upgrade "$LATEST"; exit $? ;;
+  esac
+  if [[ ! -t 0 ]]; then
+    err "non-interactive stdin — re-run 'lm upgrade-ollama --upgrade' to auto-install"
+    exit 1
+  fi
+  read -r -p "Install Ollama $LATEST now? [Y/n] " ans
+  ans="${ans:-Y}"
+  if [[ "$ans" =~ ^[yY]$ ]]; then
+    do_upgrade "$LATEST"
+  else
+    warn "Skipped Ollama install"
+  fi
   exit 0
-}
-if ! [[ "$LATEST" =~ ^[0-9]+\.[0-9]+ ]]; then
-  warn "unrecognized latest version '$LATEST' — continuing with local $CURRENT"
+fi
+
+# Installed path: only version comparison below
+if [[ -z "$LATEST" || ! "$LATEST" =~ ^[0-9]+\.[0-9]+ ]]; then
+  warn "could not fetch latest version from GitHub — continuing with local $CURRENT"
   exit 0
 fi
 

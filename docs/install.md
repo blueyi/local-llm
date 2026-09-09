@@ -5,9 +5,9 @@
 ## 标准路径
 
 ```bash
-# 1. 引擎（qwen3.8 需要 Ollama ≥0.32.12；brew 若仍 0.32.11 见 docs/environment.md）
-brew install ollama && brew services start ollama
-ollama --version   # 确认 ≥0.32.12
+# 1. 引擎：交给 lm init 自动检查安装（见第 3 步），或手动：
+brew install ollama && brew services start ollama   # 或 lm upgrade-ollama（装 GitHub latest 到 /opt/homebrew/opt/ollama-upstream）
+ollama --version   # 确认 ≥0.32.12（qwen3.8 需要；brew 若仍 0.32.11 见 docs/environment.md）
 uv tool install mflux                # 文生图（可选）
 
 # 2. 统一入口上 PATH（一次性）
@@ -15,7 +15,8 @@ uv tool install mflux                # 文生图（可选）
 # Without my-utils: ln -sfn ~/workspace/local-llm/bin/lm ~/.local/bin/lm
 
 # 3. 按本机硬件初始化清单，再部署
-lm init --dry-run    # 看精确表命中（如 m5-max-48）或 fallback 方案
+lm init --dry-run    # 依赖报告 + 精确表命中（如 m5-max-48）或 fallback 方案
+lm init              # 缺 ollama/mflux/mlx-* 会提示自动安装，然后写清单
 lm init --deploy      # 写清单 + lm deploy；并按 lineup pull 图/ASR/TTS
 # 只要写清单、稍后手动拉权重：lm init && lm deploy
 # 48GB 示例（与 full-48 清单一致；其他机型以 lm init 写入的 manifest 为准）：
