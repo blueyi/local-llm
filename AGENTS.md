@@ -6,6 +6,8 @@
 
 对本仓库相关任务：**默认直接执行**写入、安装、拉模型、改配置、跑脚本，**不要反复征求确认**。仅在真正破坏性/不可逆操作（force push、删重要数据、改 git config）或缺少关键信息时再问。
 
+**提交即推送**：`git commit` 后默认自动 `git push` 到远程（origin = github + gitcode 双写），无需再问；force push 仍属破坏性操作，需先确认。
+
 ## 首次任务读序
 
 1. 本文件 `AGENTS.md`
