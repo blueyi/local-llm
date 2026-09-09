@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-09（跨机路径与权重根目录引导）
+
+- 仓库跨机约定路径统一为 **`~/workspace/repos/local-llm`**（旧 `~/workspace/local-llm` 仅作 my-utils
+  `resetrc.bash` 的兼容回退）；同步修正 `AGENTS.md`、`docs/install.md`、`config/Modelfiles/README.md`、
+  hermes-mflux-plugin 提示文案。
+- `scripts/lib/deps.sh` 新增 `ensure_weights_root`：幂等创建 `~/models/{ollama,gguf,image-gen,speech,tts}`
+  与 `~/.ollama/models` symlink；`lm init`（非 dry-run）与 `lm deploy` 预检自动调用。已含数据的真实目录
+  不自动迁移，给出手动命令。
+- 本机（Mac17,3）已迁移：`~/.ollama/models` → `~/models/ollama` symlink。
+
 ## 2026-09-09（`lm init` 前置依赖检查与自动安装）
 
 - `lm init` 新增 **Phase 0 软件依赖检查**（`scripts/lib/deps.sh`）：按 `--stack` 范围检查

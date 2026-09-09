@@ -4,7 +4,7 @@ Wraps the ``mflux-generate-*`` CLIs installed by ``uv tool install mflux``
 as an :class:`ImageGenProvider`. Fully local & free — no API key.
 
 Models (weights pre-downloaded to ``~/models/image-gen/``,
-see ~/workspace/local-llm/docs/image-gen.md):
+see docs/image-gen.md in the local-llm repo):
 
 - ``flux2-klein-4b`` — FLUX.2 Klein 4B 4bit, 4 steps, ~3s/768px on M5 Max.
   Supports text-to-image AND image editing (flux2-edit).
@@ -236,7 +236,7 @@ class MfluxImageGenProvider(ImageGenProvider):
             return error_response(
                 error=(
                     f"Model weights not found at {weights}. Download with "
-                    "~/workspace/local-llm/scripts/pull-image-model.sh"
+                    "`lm pull-image` (see docs/image-gen.md in the local-llm repo)"
                 ),
                 error_type="not_configured",
                 provider="mflux",

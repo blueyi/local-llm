@@ -62,6 +62,7 @@ command -v python3 >/dev/null 2>&1 || { err "python3 required"; exit 1; }
 if [[ "$SKIP_DEPS" -eq 1 ]]; then
   warn "skipped dependency check (--skip-deps)"
 else
+  [[ "$DRY_RUN" -eq 1 ]] || { ensure_weights_root || warn "weights root setup incomplete — continuing"; }
   DEP_STACKS=()
   if [[ "$STACK" == "all" ]]; then
     DEP_STACKS=(llm image asr tts)

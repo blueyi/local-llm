@@ -31,6 +31,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/scripts/lib/common.sh"
+source "$ROOT/scripts/lib/deps.sh"
 MANIFEST="$ROOT/config/models.manifest"
 GGUF_DIR="${LLM_GGUF_DIR:-$HOME/models/gguf}"
 HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
@@ -87,6 +88,7 @@ preflight() {
   log "Environment health check"
   command -v ollama >/dev/null 2>&1 || { err "ollama not installed — auto-install: lm upgrade-ollama --upgrade (or see docs/install.md)"; exit 1; }
   ok "ollama $(ollama --version 2>/dev/null | head -1)"
+  [[ "$DO_CHECK" -eq 1 ]] || { ensure_weights_root || warn "weights root not initialized — continuing anyway"; }
   if ! curl -s -m 5 -o /dev/null "http://127.0.0.1:11434/api/tags"; then
     warn "Ollama daemon not responding, trying to start it..."
     ( ollama serve >/dev/null 2>&1 & )

@@ -19,6 +19,7 @@
 #
 # API:
 #   deps_ensure STACK [STACK...]
+#   ensure_weights_root           # ~/models/* + ~/.ollama/models symlink
 # Flags (env): DEPS_ASSUME_YES=1 (no prompt), DEPS_DRY_RUN=1 (report only)
 # Returns 0 when everything is present / installed / skipped-by-user;
 # returns 1 when an install was attempted and failed.
@@ -90,6 +91,35 @@ _dep_install() {
       return 1
       ;;
   esac
+}
+
+# Weights root bootstrap (path convention: ~/models/, see AGENTS.md).
+# Idempotent: creates ~/models/{ollama,gguf,image-gen,speech,tts} and the
+# ~/.ollama/models -> ~/models/ollama symlink. If a real (non-symlink)
+# ~/.ollama/models dir already holds data, we do NOT auto-migrate (the
+# daemon may be mid-pull) — warn with manual steps instead.
+ensure_weights_root() {
+  local root="${LLM_MODELS_ROOT:-$HOME/models}"
+  mkdir -p "$root/ollama" "$root/gguf" "$root/image-gen" "$root/speech" "$root/tts" || {
+    warn "could not create weights root under $root"
+    return 1
+  }
+  local link="$HOME/.ollama/models"
+  if [[ -L "$link" ]]; then
+    return 0
+  elif [[ -d "$link" ]]; then
+    if [[ -z "$(ls -A "$link" 2>/dev/null)" ]]; then
+      rmdir "$link" && ln -sfn "$root/ollama" "$link"
+    else
+      warn "~/.ollama/models is a real directory with data — migrate manually:"
+      warn "  rsync -a ~/.ollama/models/ ~/models/ollama/ && rm -rf ~/.ollama/models && ln -sfn ~/models/ollama ~/.ollama/models"
+      return 1
+    fi
+  else
+    mkdir -p "$HOME/.ollama" && ln -sfn "$root/ollama" "$link"
+  fi
+  ok "weights root: $root (ollama symlinked)"
+  return 0
 }
 
 deps_ensure() {

@@ -11,8 +11,8 @@ ollama --version   # 确认 ≥0.32.12（qwen3.8 需要；brew 若仍 0.32.11 �
 uv tool install mflux                # 文生图（可选）
 
 # 2. 统一入口上 PATH（一次性）
-# PATH via my-utils (config/resetrc.bash prepends ~/workspace/local-llm/bin)
-# Without my-utils: ln -sfn ~/workspace/local-llm/bin/lm ~/.local/bin/lm
+# PATH via my-utils (config/resetrc.bash prepends ~/workspace/repos/local-llm/bin)
+# Without my-utils: ln -sfn ~/workspace/repos/local-llm/bin/lm ~/.local/bin/lm
 
 # 3. 按本机硬件初始化清单，再部署
 lm init --dry-run    # 依赖报告 + 精确表命中（如 m5-max-48）或 fallback 方案

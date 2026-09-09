@@ -3,4 +3,4 @@
 #   FROM ./path-outside-repo-or-huggingface
 #   PARAMETER num_ctx 32768
 #
-# Weights must NOT live under ~/workspace/local-llm.
+# Weights must NOT live under ~/workspace/repos/local-llm.

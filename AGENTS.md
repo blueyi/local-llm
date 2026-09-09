@@ -27,7 +27,7 @@
 
 ## 禁止
 
-- 把模型权重下载到本仓库（`~/workspace/local-llm`）
+- 把模型权重下载到本仓库（`~/workspace/repos/local-llm`）
 - 删除 registry 中仍在使用的条目却不写 changelog
 - 同时加载两个 ≥18GB 的「大」模型（本机 48GB）
 
@@ -37,7 +37,7 @@
 
 | 内容 | 路径 |
 |------|------|
-| 本方案知识库 | `~/workspace/local-llm` |
+| 本方案知识库 | `~/workspace/repos/local-llm` |
 | **权重统一根目录** | `~/models/` |
 | Ollama 权重 | `~/models/ollama/`（`~/.ollama/models` 是指向它的 symlink，勿删） |
 | 手动 GGUF（含 LM Studio 共享） | `~/models/gguf/`（`~/.lmstudio/models/llm-gguf` symlink 指向它） |
