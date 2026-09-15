@@ -45,6 +45,9 @@ export OLLAMA_FLASH_ATTENTION=1
 export OLLAMA_KV_CACHE_TYPE=q8_0
 ```
 
+守护进程**默认登录不自启**（`RunAtLoad`/`KeepAlive=false`，笔记本省电）：`lm start` / `lm stop` 按需启停，
+`lm run` / `lm deploy` 自动拉起，`lm autostart on` 恢复常驻自启。
+
 ### 上下文长度的真实生效路径（易踩）
 
 `config/models.manifest` 的 `NUM_CTX` **只作用于手动 GGUF 导入**（写进 Modelfile 的

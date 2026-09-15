@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-16（Ollama 守护进程手动启停：默认登录不自启，省电）
+
+- 新增 `scripts/ollama-serve.sh` + `lm start` / `lm stop` / `lm autostart on|off|status`：
+  LaunchAgent（`homebrew.mxcl.ollama.plist`）`RunAtLoad`/`KeepAlive` 默认改 `false`，
+  登录不再常驻，笔记本不用本地模型时不耗电；`lm autostart on` 恢复常驻自启。
+- `lm run` 在守护进程未运行时自动拉起；`lm deploy` / `lm upgrade-ollama` 仍按需启动。
+- `upgrade-ollama.sh` 的 plist 模板同步改为手动启动（新装机默认即省电模式）。
+- 注意：`KeepAlive=false` 下守护进程崩溃不会自动重启，重跑 `lm start` 即可。
+
 ## 2026-09-15（Hermes 本地兜底链接通 + Agent 对接文档对齐 lite-16）
 
 - `~/.hermes/config.yaml`：`fallback_providers` 末尾补挂 `local-ollama / qwen3.5:9b`

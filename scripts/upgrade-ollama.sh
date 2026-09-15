@@ -82,7 +82,9 @@ restart_daemon() {
     launchctl bootstrap "gui/$(id -u)" "$plist" 2>/dev/null || true
     launchctl kickstart -k "gui/$(id -u)/homebrew.mxcl.ollama" 2>/dev/null || true
   else
-    # Minimal plist so KeepAlive survives reboot
+    # Minimal plist. Manual-start by default (laptop battery): RunAtLoad /
+    # KeepAlive are false — daemon starts on demand via `lm start`, `lm run`,
+    # or `lm deploy`; `lm autostart on` restores login auto-start.
     mkdir -p "$HOME/Library/LaunchAgents" /opt/homebrew/var/log
     cat >"$plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -97,7 +99,7 @@ restart_daemon() {
     <string>q8_0</string>
   </dict>
   <key>KeepAlive</key>
-  <true/>
+  <false/>
   <key>Label</key>
   <string>homebrew.mxcl.ollama</string>
   <key>ProgramArguments</key>
@@ -106,7 +108,7 @@ restart_daemon() {
     <string>serve</string>
   </array>
   <key>RunAtLoad</key>
-  <true/>
+  <false/>
   <key>StandardErrorPath</key>
   <string>/opt/homebrew/var/log/ollama.log</string>
   <key>StandardOutPath</key>

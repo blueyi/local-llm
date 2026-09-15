@@ -14,6 +14,9 @@
 #   lm image "prompt"             # Text-to-image (--model/--size/--steps/--seed/--edit, see lm image --help)
 #   lm asr <audio>                # Speech-to-text via mlx-whisper (--model/--lang)
 #   lm tts "text"                 # Text-to-speech via mlx-audio (--model/--voice/--lang/--play)
+#   lm start                      # Start Ollama daemon on demand
+#   lm stop                       # Stop daemon (power saving on laptops)
+#   lm autostart off|on|status    # Toggle login auto-start of the daemon
 #
 # [Deploy / Upgrade]
 #   lm check                      # Health check + manifest reconciliation (no install)
@@ -49,11 +52,15 @@ usage() { grep -E '^#( |=)' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
 CMD="${1:-help}"; shift || true
 case "$CMD" in
   status)      exec "$S/status.sh" "$@" ;;
+  start|stop|autostart)
+               exec "$S/ollama-serve.sh" "$CMD" "$@" ;;
   run)
     TAG="${1:-main}"
     # Tier name -> manifest tag; unknown names pass through to ollama as-is.
     # Known-but-removed tiers (e.g. deep on lite-16) fail with guidance.
     TAG="$(resolve_llm_tag "$TAG")" || exit 1
+    # Daemon is manual-start by default (battery) — auto-start it on demand
+    curl -s -m 2 -o /dev/null http://127.0.0.1:11434/api/tags || "$S/ollama-serve.sh" start
     exec ollama run "$TAG" ;;
   test)        exec "$S/smoke-test.sh" "$@" ;;
   image)       exec "$S/gen-image.sh" "$@" ;;

@@ -8,6 +8,18 @@ lm sync                      # 刷新 models-registry 中 Ollama 列表
 ollama ps                    # 当前已加载模型
 ```
 
+守护进程按需启停（笔记本省电）：**默认登录不自启**（LaunchAgent `RunAtLoad`/`KeepAlive=false`）。
+
+```bash
+lm start                     # 启动 Ollama 守护进程
+lm stop                      # 停止（不用本地模型时省电）
+lm autostart status          # 查看自启开关 + 运行状态
+lm autostart on              # 恢复登录自启 + 常驻（崩溃自动重启）
+```
+
+`lm run` / `lm deploy` / `lm upgrade-ollama` 会在守护进程未运行时自动拉起，无需手动 `lm start`。
+注意：`KeepAlive=false` 下守护进程崩溃不会自动重启，重跑 `lm start` 即可。
+
 卸载 Ollama 模型（走统一入口，执行前确认提示）：
 
 ```bash
