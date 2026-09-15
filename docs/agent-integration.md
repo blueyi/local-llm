@@ -1,21 +1,23 @@
 # Cursor / Agent 对接
 
+> 本页按**当前提交的清单**（lite-16：M5 / 16GB）描述。其他机型经 `lm init` 生成不同角色集合，
+> 以 `config/models.manifest` 为准；多机型 lineup 见 [hardware-profiles.md](./hardware-profiles.md)。
+
 ## Ollama（推荐）
 
 | 项 | 值 |
 |----|-----|
 | Base URL | `http://127.0.0.1:11434/v1` |
 | API Key | 任意非空（如 `ollama`） |
-| **main 日常主力** | `qwen3.8:27b-q4_K_M` |
-| deep 深度质量 | `qwen3.8:27b-q8_0` |
-| fast 极限速度 | `qwen3.5:9b` |
-| chat 闲聊/创意 | `gemma4:31b`（勿用于 Cursor Agent） |
-| reason 专用推理 | `gpt-oss:20b` |
-| embed RAG | `qwen3-embedding:8b`（`/api/embeddings`） |
+| **main 日常主力** | `qwen3.5:9b`（本机唯一 LLM 档；原生 vision，识图无需单独 VL） |
+| embed RAG | `qwen3-embedding:4b`（`/api/embeddings`） |
 | rerank RAG | `awenleven/Qwen3-Reranker-4B:Q4_K_M` |
-| 识图 | main/deep/fast 任一（原生 vision，无需单独 VL） |
 | 语音转写 | `lm asr <audio>`（非 OpenAI `/v1`，mlx-whisper） |
 | 语音合成 | `lm tts "text"`（非 OpenAI `/v1`，mlx-audio / Kokoro） |
+
+> lite-16（16GB）**不设**独立 deep / fast / chat / reason 档——对话、编程、识图全部走 main。
+> 大内存机型（std-36 及以上）才有 `qwen3.8:27b-q8_0`（deep）、`gemma4:31b`（chat）、
+> `gpt-oss:20b`（reason）等独立档，见 [tiers.md](./tiers.md)。
 
 探测：
 
@@ -28,18 +30,13 @@ curl http://127.0.0.1:11434/v1/models
 
 | 场景 | 档位 | 模型 |
 |------|------|------|
-| Cursor Agent / 日常编程 / 识图 | main | `qwen3.8:27b-q4_K_M` |
-| 难 bug / 架构 / 精读 | deep | `qwen3.8:27b-q8_0` |
-| 快速草稿 / 补全 / 扫图 | fast | `qwen3.5:9b` |
-| 闲聊 / 多语言 / 创意 | chat | `gemma4:31b` |
-| RAG / 语义检索 | embed | `qwen3-embedding:8b` |
+| Cursor Agent / 日常编程 / 识图 | main | `qwen3.5:9b` |
+| RAG / 语义检索 | embed | `qwen3-embedding:4b` |
+| RAG 二阶段重排 | rerank | `awenleven/Qwen3-Reranker-4B:Q4_K_M` |
 
-> deep 档 27B 稠密 Q8（~30GB）：不与其它大模型同开。
->
 > **实际上下文 = 32K**（Ollama daemon 默认；`OLLAMA_CONTEXT_LENGTH` 本机未设置，
-> Cursor 等客户端也不会发 `options.num_ctx`）。manifest 里 main 的 `65536` 只对
-> 手动 GGUF 导入生效。main（~18GB）内存上有空间开到 64K，但需显式配置——
-> 见 [environment.md 上下文长度的真实生效路径](./environment.md#上下文长度的真实生效路径易踩)。
+> Cursor 等客户端也不会发 `options.num_ctx`）。manifest 里的 `NUM_CTX` 只对
+> 手动 GGUF 导入生效——见 [environment.md 上下文长度的真实生效路径](./environment.md#上下文长度的真实生效路径易踩)。
 
 ## 配置片段
 
@@ -47,25 +44,33 @@ curl http://127.0.0.1:11434/v1/models
 
 ## Hermes Agent（已接入）
 
-`~/.hermes/config.yaml` 中已注册 `local-ollama` provider，并把 main/fast 档挂在 fallback 链末尾（云端全挂时自动降级到本地）：
+`~/.hermes/config.yaml` 中已注册 `local-ollama` provider，并挂在 `fallback_providers`
+链**末尾**（云端全挂时自动降级到本地）：
 
 ```yaml
 providers:
   local-ollama:
     base_url: http://127.0.0.1:11434/v1
     api_key: ollama
-    models: [qwen3.8:27b-q4_K_M, qwen3.8:27b-q8_0, qwen3.5:9b]
+    api_mode: chat_completions
+    model: qwen3.5:9b
+    default_model: qwen3.5:9b
+    models: [qwen3.5:9b]
 fallback_providers:
   # ...云端条目...
-  - {provider: local-ollama, model: qwen3.8:27b-q4_K_M}
-  - {provider: local-ollama, model: qwen3.5:9b}
+  - {provider: local-ollama, model: qwen3.5:9b}   # 本地兜底，最后才用
 ```
+
+**前置条件（`lm` 侧只需一条）**：`lm deploy` —— 拉起 Ollama daemon 并按 manifest 拉齐权重
+（新机更省事：`lm init --deploy` 一条完成依赖安装 + 清单 + 权重）。之后 Hermes 即可用，
+无需再跑其他 `lm` 命令；日常可用 `lm status` / `lm check` 确认 daemon 与权重健康。
 
 手动指定本地模型跑 Hermes：
 
 ```bash
-hermes chat -q "..." -m qwen3.8:27b-q4_K_M --provider local-ollama
+hermes chat -q "..." -m qwen3.5:9b --provider local-ollama
 ```
 
 > 注意：Qwen thinking 系在 OpenAI 兼容接口下 reasoning 占用 completion tokens，
 > 调用方 `max_tokens` 需 ≥2048，否则回复会被 thinking 吃光（finish=length，content 空）。
+> 16GB 机型上 Hermes 完整系统提示 + thinking 的首轮延迟约为分钟级，属正常现象。

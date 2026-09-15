@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-15（Hermes 本地兜底链接通 + Agent 对接文档对齐 lite-16）
+
+- `~/.hermes/config.yaml`：`fallback_providers` 末尾补挂 `local-ollama / qwen3.5:9b`
+  （provider 早已注册，但此前不在 fallback 链中）；`hermes chat --provider local-ollama` 实测通过。
+- `docs/agent-integration.md` 重写对齐当前 lite-16 清单（main=qwen3.5:9b 为唯一 LLM 档；
+  embed 4b / rerank 4B；标注大内存机型差异）；`config/defaults.env.example` 同步。
+- 待办：README.md / docs/tiers.md 仍描述 full-48（48GB 机）清单，需单独同步。
+
 ## 2026-09-09（tier 解析守卫：已移除档不再误透传 ollama）
 
 - `scripts/lib/common.sh` 新增 `resolve_llm_tag`：档名命中清单→对应 tag；**已知但被本机 lineup
