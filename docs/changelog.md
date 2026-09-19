@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-18 (lm update: tier refresh)
+
+- `lm update` applied: main: qwen3.5:9b -> qwen3.8:27b-q4_K_M
+- Install SSOT: `config/models.manifest`; policy: `config/update-policy.conf`
+
+
 ## 2026-09-16（Ollama 守护进程手动启停：默认登录不自启，省电）
 
 - 新增 `scripts/ollama-serve.sh` + `lm start` / `lm stop` / `lm autostart on|off|status`：

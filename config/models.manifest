@@ -25,7 +25,7 @@
 # ---- Core coding/agent tiers (v2.9 — Qwen3.8 lineup, 2026-08-15) ----
 # main/deep: Qwen3.8-27B dense (latest open gen; no 3.8 MoE yet on Ollama)
 # fast: no smaller 3.8 — keep Qwen3.5-9B multimodal draft
-main|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf|https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+main|qwen3.8:27b-q4_K_M|65536||
 
 # ---- Category coverage ----
 # embed: upgrade 4b → 8b (still small; better retrieval)

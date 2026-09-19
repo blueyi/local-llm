@@ -29,7 +29,7 @@
 |------|------|------|------|
 | **main** | `qwen3.8:27b-q4_K_M` | ~18GB | Agent 主力；最新开源代 |
 | **deep** | `qwen3.8:27b-q8_0` | ~30GB | 难题；勿与其它大模型同开 |
-| **fast** | `qwen3.5:9b` | 6.6GB | 草稿（尚无更小的 3.8） |
+| **fast** | `qwen3.5:9b-q4_K_M` | 6.6GB | 草稿（尚无更小的 3.8） |
 | **embed** | `qwen3-embedding:8b` | 4.7GB | RAG；可与大模型同开 |
 | **rerank** | `awenleven/Qwen3-Reranker-4B:Q4_K_M` | 2.5GB | 检索重排；配合 embed |
 | **chat** | `gemma4:31b` | 20GB | 闲聊/创意；勿替 main |
