@@ -8,6 +8,8 @@
 #   TIER    : main=daily agent  deep=quality  fast=speed
 #             embed=RAG embeddings  chat=creative/multilingual assistant
 #             reason=dedicated reasoning  rerank=RAG reranker
+#             redteam=alignment A/B (same-base uncensored)  redfast=cheap probe
+#             heretic=RVN ARA (lower refusal)  crack=CRACK abliteration (+vision GGUF)
 #             retired=to delete
 #   OLLAMA_TAG : official ollama tag (preferred install path, native resume)
 #   NUM_CTX : default context written into the Modelfile for manual GGUF imports
@@ -34,6 +36,15 @@ embed|qwen3-embedding:4b|8192||
 # reason: gpt-oss:20b remains best fit (120b ~65GB exceeds 48GB)
 # rerank: no newer public Ollama pin; keep Qwen3-Reranker-4B
 rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+
+# ---- Alignment red-team (research A/B; exclusive with other ≥18GB loads) ----
+# redteam: same-base abliterated twin of main (huihui Ollama native, Q4_K_M ~18GB)
+# redfast: cheap Qwen3.5-9B uncensored probe (jaahas; huihui 3.5 abliteration is weak)
+redteam|huihui_ai/Qwen3.8-abliterated:27b-q4_K_M|65536||
+redfast|jaahas/qwen3.5-uncensored:9b|32768||
+# heretic/crack: Ollama has no native tag — deploy falls back to GGUF import (or lm deploy … --gguf)
+heretic|qwen3.8-heretic:27b-q4_K_M|65536|https://huggingface.co/0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored-GGUF/resolve/main/RVN-Q4_K_M-multilingual.gguf|
+crack|qwen3.8-crack:27b-q4_K_M|65536|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/Qwen3.8-27B-CRACK-Q4_K_M.gguf|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/mmproj-Qwen3.8-27B-f16.gguf|
 
 # ---- Retired (deleted by deploy.sh --prune; kept here as history) ----
 retired|qwen3.6:35b-a3b-q4_K_M|||

@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-09-19（对齐攻防补 heretic / crack）
+
+- 新增 **heretic** / **crack**：RVN `RVN-Q4_K_M-multilingual.gguf` 与 CRACK Q4_K_M（+ mmproj），GGUF 导入 Ollama（无原生 tag）。
+- `lm deploy heretic --gguf` / `lm deploy crack --gguf`；import 支持可选第二 FROM（vision projector）。
+- 仍与 main/deep/chat/redteam 互斥加载（均 ≥16GB）。
+
+## 2026-09-19（对齐攻防独立档：redteam / redfast）
+
+- 新增 LLM 角色 **redteam** / **redfast**（不进日常 Agent）：分别对照 main 的 Qwen3.8-27B abliterated 与 fast 的 Qwen3.5-9B uncensored。
+- 默认钉：`huihui_ai/Qwen3.8-abliterated:27b-q4_K_M`（Ollama 原生、与 stock 同量化 A/B）+ `jaahas/qwen3.5-uncensored:9b`（huihui 的 3.5 abliteration 拒答仍高；vaultbox 同名 tag registry 404）。
+- `KNOWN_LLM_TIERS` 纳入两档；`lm deploy/run/test/get --tier` 可用。full-48 / std-36 / plus-64 / ultra-128 lineup 写入。
+- 文档：`docs/tiers.md` 增加对齐攻防节（含 RVN/CRACK GGUF 与跨家族观察名单）。
+
 ## 2026-09-18 (lm update: tier refresh)
 
 - `lm update` applied: main: qwen3.5:9b -> qwen3.8:27b-q4_K_M

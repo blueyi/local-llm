@@ -15,9 +15,9 @@
 | 语音转写 | `lm asr <audio>`（非 OpenAI `/v1`，mlx-whisper） |
 | 语音合成 | `lm tts "text"`（非 OpenAI `/v1`，mlx-audio / Kokoro） |
 
-> lite-16（16GB）**不设**独立 deep / fast / chat / reason 档——对话、编程、识图全部走 main。
+> lite-16（16GB）**不设**独立 deep / fast / chat / reason / redteam 档——对话、编程、识图全部走 main。
 > 大内存机型（std-36 及以上）才有 `qwen3.8:27b-q8_0`（deep）、`gemma4:31b`（chat）、
-> `gpt-oss:20b`（reason）等独立档，见 [tiers.md](./tiers.md)。
+> `gpt-oss:20b`（reason）以及对齐攻防档 `redteam` / `redfast`（研究用，不接 Cursor），见 [tiers.md](./tiers.md)。
 
 探测：
 

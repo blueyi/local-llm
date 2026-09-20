@@ -869,6 +869,10 @@ def cmd_apply_manifest(args: argparse.Namespace) -> int:
         "chat": _i(policy, "CHAT_NUM_CTX", 65536),
         "reason": _i(policy, "REASON_NUM_CTX", 65536),
         "rerank": _i(policy, "RERANK_NUM_CTX", 8192),
+        "redteam": _i(policy, "REDTEAM_NUM_CTX", 65536),
+        "redfast": _i(policy, "REDFAST_NUM_CTX", 32768),
+        "heretic": _i(policy, "HERETIC_NUM_CTX", 65536),
+        "crack": _i(policy, "CRACK_NUM_CTX", 65536),
     }
     changes = apply_manifest_updates(Path(args.manifest), updates, ctx_map)
     print(json.dumps({"changes": changes}, indent=2))

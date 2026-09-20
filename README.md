@@ -61,6 +61,10 @@ lm sync                        # ollama list 回写 registry
 | **rerank** | RAG 重排 | `awenleven/Qwen3-Reranker-4B:Q4_K_M` | 2.5GB | 134.0 |
 | **chat** | 闲聊、创意（非 Agent） | `gemma4:31b` | 20GB | 23.9 |
 | **reason** | 专用推理 | `gpt-oss:20b` | ~14GB | 104.3 |
+| **redteam** | 对齐攻防 A/B（同基 uncensored） | `huihui_ai/Qwen3.8-abliterated:27b-q4_K_M` | ~18GB | — |
+| **redfast** | 廉价无审查探针 | `jaahas/qwen3.5-uncensored:9b` | ~7.4GB | — |
+| **heretic** | 低拒答 RVN ARA | `qwen3.8-heretic:27b-q4_K_M` | ~16.5GB | — |
+| **crack** | 低拒答 CRACK（含 vision） | `qwen3.8-crack:27b-q4_K_M` | ~17GB | — |
 
 语音：ASR `lm asr audio.wav`；TTS 日常 `lm tts "你好"`（Kokoro），质量档 `lm tts "…" --model qwen3-tts-1.7b`（Qwen3-TTS 1.7B）。详见 [docs/tiers.md](./docs/tiers.md)。
 

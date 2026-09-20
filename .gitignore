@@ -8,4 +8,6 @@ models/
 .tmp/
 .cache/
 *.log
+config/Modelfiles/*.Modelfile
+!config/Modelfiles/README.md
 __pycache__/

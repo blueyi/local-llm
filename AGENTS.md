@@ -58,7 +58,7 @@ lm deploy [tier] [--force] [--yes] [--skip-ollama-upgrade]
                                       # 部署（缺则拉；先检查 Ollama 是否最新并提示升级）
 lm update                         # 远程目录+硬件推荐三档 → 确认后写 manifest 并 deploy
 lm get <query>                    # 模糊搜索远程模型 → 交互选择 → pull（--tier …）
-lm run [tier] / lm test [tier]    # 聊天 / 冒烟（含 embed|chat|reason|rerank|asr|tts）
+lm run [tier] / lm test [tier]    # 聊天 / 冒烟（含 embed|chat|reason|rerank|redteam|redfast|heretic|crack|asr|tts）
 lm start / lm stop                # Ollama 守护进程按需启停（lm run/deploy 未运行时自动拉起）
 lm autostart off|on|status        # 登录自启开关（默认 off，笔记本省电）
 lm image "prompt" / lm asr <audio># 文生图 / 语音转写

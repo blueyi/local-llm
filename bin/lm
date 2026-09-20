@@ -9,8 +9,8 @@
 #
 # [Daily]
 #   lm status                     # Overview: models / weights dirs / disk
-#   lm run [main|deep|fast|chat|reason]  # Interactive chat (default: main; any ollama tag also works)
-#   lm test [tag] [prompt]        # Smoke test (tiers: main|deep|fast|embed|chat|reason|rerank)
+#   lm run [main|deep|fast|chat|reason|redteam|redfast|heretic|crack]  # Interactive chat (default: main; any ollama tag also works)
+#   lm test [tag] [prompt]        # Smoke test (any known LLM tier or ollama tag)
 #   lm image "prompt"             # Text-to-image (--model/--size/--steps/--seed/--edit, see lm image --help)
 #   lm asr <audio>                # Speech-to-text via mlx-whisper (--model/--lang)
 #   lm tts "text"                 # Text-to-speech via mlx-audio (--model/--voice/--lang/--play)

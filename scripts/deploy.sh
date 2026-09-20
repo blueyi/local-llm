@@ -7,7 +7,7 @@
 #
 # Usage:
 #   ./scripts/deploy.sh                # deploy every tier in the manifest
-#   ./scripts/deploy.sh main           # deploy a single tier (main|deep|fast|embed|chat)
+#   ./scripts/deploy.sh main           # deploy a single known tier (see KNOWN_LLM_TIERS)
 #   ./scripts/deploy.sh --check        # health check + reconciliation only, no install
 #   ./scripts/deploy.sh --prune        # deploy, then delete retired models (asks for confirmation)
 #   ./scripts/deploy.sh --force        # re-pull even if already installed
@@ -48,7 +48,6 @@ YES=0
 SKIP_OLLAMA_UPGRADE=0
 for arg in "$@"; do
   case "$arg" in
-    main|deep|fast|embed|chat|reason|rerank) ONLY_TIER="$arg" ;;
     a) ONLY_TIER="deep" ;;   # legacy tier-letter compatibility
     b) ONLY_TIER="main" ;;
     c) ONLY_TIER="fast" ;;
@@ -59,7 +58,13 @@ for arg in "$@"; do
     --yes|-y)     YES=1 ;;
     --skip-ollama-upgrade|--no-ollama-upgrade) SKIP_OLLAMA_UPGRADE=1 ;;
     -h|--help)    grep -E '^#( |=)' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-    *)            echo "Unknown argument: $arg (see --help)"; exit 1 ;;
+    *)
+      if is_known_llm_tier "$arg"; then
+        ONLY_TIER="$arg"
+      else
+        echo "Unknown argument: $arg (see --help)"; exit 1
+      fi
+      ;;
   esac
 done
 
@@ -180,11 +185,18 @@ install_model() {
   [[ -n "$gguf_url" ]] || { err "[$tier] $tag has no GGUF fallback URL, skipping"; return 1; }
   local gguf localname
   gguf="$(download_gguf "$gguf_url")" || return 1
-  [[ -n "$mmproj_url" ]] && download_gguf "$mmproj_url" >/dev/null || true
+  local mmproj=""
+  if [[ -n "$mmproj_url" ]]; then
+    mmproj="$(download_gguf "$mmproj_url")" || true
+  fi
   # Derive ollama model name: keep official tag (colons OK) so lm run matches
   localname="$tag"
   log "[$tier] importing into ollama: $localname (ctx=$ctx)"
-  "$IMPORT" "$localname" "$gguf" "$ctx"
+  if [[ -n "$mmproj" ]]; then
+    "$IMPORT" "$localname" "$gguf" "$ctx" "$mmproj"
+  else
+    "$IMPORT" "$localname" "$gguf" "$ctx"
+  fi
   ok "[$tier] GGUF import complete: $localname"
 }
 

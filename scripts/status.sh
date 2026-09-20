@@ -15,9 +15,13 @@ scenario_for() {
     fast)   echo "Draft / completion" ;;
     embed)  echo "RAG retrieval" ;;
     rerank) echo "RAG rerank" ;;
-    chat)   echo "Creative / multilingual" ;;
-    reason) echo "Dedicated reasoning" ;;
-    *)      echo "—" ;;
+    chat)    echo "Creative / multilingual" ;;
+    reason)  echo "Dedicated reasoning" ;;
+    redteam) echo "Alignment red-team / A-B" ;;
+    redfast) echo "Cheap uncensored probe" ;;
+    heretic) echo "Low-refusal RVN / A-B" ;;
+    crack)   echo "Low-refusal CRACK / VL" ;;
+    *)       echo "—" ;;
   esac
 }
 

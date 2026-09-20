@@ -78,6 +78,10 @@ lm get qwen3-embedding:8b --tier embed --yes
 lm get gemma4:31b --tier chat --yes
 lm get qwen3.8:27b-q4_K_M --tier main --yes
 lm get qwen3.8:27b-q8_0 --tier deep --yes
+lm get huihui_ai/Qwen3.8-abliterated:27b-q4_K_M --tier redteam --yes
+lm get jaahas/qwen3.5-uncensored:9b --tier redfast --yes
+lm deploy heretic --gguf --skip-ollama-upgrade
+lm deploy crack --gguf --skip-ollama-upgrade
 lm get qwen3.5:9b --yes      # 非交互（多候选时取策略优先的第一项）
 ```
 

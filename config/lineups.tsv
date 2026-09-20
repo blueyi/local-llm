@@ -44,6 +44,10 @@ std-36|llm|embed|qwen3-embedding:8b|8192||
 std-36|llm|chat|gemma4:31b|65536||
 std-36|llm|reason|gpt-oss:20b|65536||
 std-36|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+std-36|llm|redteam|huihui_ai/Qwen3.8-abliterated:27b-q4_K_M|65536||
+std-36|llm|redfast|jaahas/qwen3.5-uncensored:9b|32768||
+std-36|llm|heretic|qwen3.8-heretic:27b-q4_K_M|65536|https://huggingface.co/0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored-GGUF/resolve/main/RVN-Q4_K_M-multilingual.gguf|
+std-36|llm|crack|qwen3.8-crack:27b-q4_K_M|65536|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/Qwen3.8-27B-CRACK-Q4_K_M.gguf|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/mmproj-Qwen3.8-27B-f16.gguf
 std-36|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
 std-36|image|alt|z-image-turbo|filipstrand/Z-Image-Turbo-mflux-4bit|mflux-generate-z-image-turbo|||9
 std-36|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
@@ -58,6 +62,10 @@ full-48|llm|embed|qwen3-embedding:8b|8192||
 full-48|llm|chat|gemma4:31b|65536||
 full-48|llm|reason|gpt-oss:20b|65536||
 full-48|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+full-48|llm|redteam|huihui_ai/Qwen3.8-abliterated:27b-q4_K_M|65536||
+full-48|llm|redfast|jaahas/qwen3.5-uncensored:9b|32768||
+full-48|llm|heretic|qwen3.8-heretic:27b-q4_K_M|65536|https://huggingface.co/0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored-GGUF/resolve/main/RVN-Q4_K_M-multilingual.gguf|
+full-48|llm|crack|qwen3.8-crack:27b-q4_K_M|65536|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/Qwen3.8-27B-CRACK-Q4_K_M.gguf|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/mmproj-Qwen3.8-27B-f16.gguf
 full-48|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
 full-48|image|alt|z-image-turbo|filipstrand/Z-Image-Turbo-mflux-4bit|mflux-generate-z-image-turbo|||9
 full-48|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
@@ -71,6 +79,10 @@ plus-64|llm|embed|qwen3-embedding:8b|8192||
 plus-64|llm|chat|gemma4:31b|65536||
 plus-64|llm|reason|gpt-oss:20b|65536||
 plus-64|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+plus-64|llm|redteam|huihui_ai/Qwen3.8-abliterated:27b-q4_K_M|65536||
+plus-64|llm|redfast|jaahas/qwen3.5-uncensored:9b|32768||
+plus-64|llm|heretic|qwen3.8-heretic:27b-q4_K_M|65536|https://huggingface.co/0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored-GGUF/resolve/main/RVN-Q4_K_M-multilingual.gguf|
+plus-64|llm|crack|qwen3.8-crack:27b-q4_K_M|65536|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/Qwen3.8-27B-CRACK-Q4_K_M.gguf|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/mmproj-Qwen3.8-27B-f16.gguf
 plus-64|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
 plus-64|image|alt|z-image-turbo|filipstrand/Z-Image-Turbo-mflux-4bit|mflux-generate-z-image-turbo|||9
 plus-64|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper
@@ -84,6 +96,10 @@ ultra-128|llm|fast|qwen3.5:9b|32768|https://huggingface.co/unsloth/Qwen3.5-9B-GG
 ultra-128|llm|embed|qwen3-embedding:8b|8192||
 ultra-128|llm|chat|gemma4:31b|65536||
 ultra-128|llm|rerank|awenleven/Qwen3-Reranker-4B:Q4_K_M|8192||
+ultra-128|llm|redteam|huihui_ai/Qwen3.8-abliterated:27b-q4_K_M|65536||
+ultra-128|llm|redfast|jaahas/qwen3.5-uncensored:9b|32768||
+ultra-128|llm|heretic|qwen3.8-heretic:27b-q4_K_M|65536|https://huggingface.co/0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored-GGUF/resolve/main/RVN-Q4_K_M-multilingual.gguf|
+ultra-128|llm|crack|qwen3.8-crack:27b-q4_K_M|65536|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/Qwen3.8-27B-CRACK-Q4_K_M.gguf|https://huggingface.co/dealignai/Qwen3.8-27B-UNCENSORED-GGUF/resolve/main/mmproj-Qwen3.8-27B-f16.gguf
 ultra-128|image|primary|flux2-klein-4b|Runpod/FLUX.2-klein-4B-mflux-4bit|mflux-generate-flux2|mflux-generate-flux2-edit|flux2-klein-4b|4
 ultra-128|image|alt|z-image-turbo|filipstrand/Z-Image-Turbo-mflux-4bit|mflux-generate-z-image-turbo|||9
 ultra-128|asr|primary|whisper-large-v3-turbo|mlx-community/whisper-large-v3-turbo|mlx-whisper

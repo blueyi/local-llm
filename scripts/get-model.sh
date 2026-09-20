@@ -49,9 +49,9 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[[ -n "$QUERY" ]] || { err "usage: lm get <query> [--tier main|deep|fast]"; exit 1; }
-if [[ -n "$TIER" && ! "$TIER" =~ ^(main|deep|fast|embed|chat|reason|rerank)$ ]]; then
-  err "--tier must be main|deep|fast|embed|chat|reason|rerank"; exit 1
+[[ -n "$QUERY" ]] || { err "usage: lm get <query> [--tier main|deep|fast|redteam|...]"; exit 1; }
+if [[ -n "$TIER" ]] && ! is_known_llm_tier "$TIER"; then
+  err "--tier must be one of: $KNOWN_LLM_TIERS"; exit 1
 fi
 command -v python3 >/dev/null 2>&1 || { err "python3 required"; exit 1; }
 command -v ollama >/dev/null 2>&1 || { err "ollama not installed"; exit 1; }

@@ -4,7 +4,7 @@
 # =============================================================
 # Usage:
 #   lm test                    # test the main LLM tier
-#   lm test fast               # tier: main|deep|fast|embed|chat|reason|rerank
+#   lm test fast               # any known LLM tier (main|deep|fast|redteam|...)
 #   lm test all                # all LLM roles + image + speech (ASR+TTS)
 #   lm test all-llm            # all LLM roles only
 #   lm test all-image          # all image-gen models only
@@ -17,7 +17,7 @@
 #   all                        -> LLM roles + image + speech
 #   all-llm | all-image        -> scope to one manifest
 #   asr | tts                  -> speech ASR / TTS smoke
-#   main|deep|fast|embed|chat|reason|rerank -> config/models.manifest
+#   <known LLM tier>           -> config/models.manifest
 #   <any ollama tag>           -> used as-is
 #
 # Notes on 'all':
@@ -41,7 +41,7 @@ TTS_ROOT="${LLM_TTS_DIR:-$HOME/models/tts}"
 if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
   grep -E '^#( |=)' "$0" | sed 's/^# \{0,1\}//'
   echo "Available LLM roles (config/models.manifest):"
-  grep -E '^(main|deep|fast|embed|chat|reason|rerank)\|' "$MANIFEST" | awk -F'|' '{printf "  %-6s -> %s\n", $1, $2}'
+  print_available_llm_tiers "$MANIFEST"
   echo
   echo "Image-gen models (config/image-models.manifest):"
   grep -E '^(primary|alt)\|' "$IMG_MANIFEST" | awk -F'|' '{printf "  %-8s -> %s\n", $1, $2}'

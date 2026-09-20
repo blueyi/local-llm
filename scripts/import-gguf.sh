@@ -9,9 +9,10 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 NAME="${1:-}"
 GGUF="${2:-}"
 CTX="${3:-32768}"
+MMPROJ="${4:-}"
 
 if [[ -z "$NAME" || -z "$GGUF" ]]; then
-  echo "Usage: $0 <ollama-name> <path-to.gguf> [num_ctx]"
+  echo "Usage: $0 <ollama-name> <path-to.gguf> [num_ctx] [mmproj.gguf]"
   exit 1
 fi
 if [[ ! -f "$GGUF" ]]; then
@@ -25,11 +26,17 @@ esac
 command -v ollama >/dev/null 2>&1 || { echo "ollama not installed"; exit 1; }
 
 ABS="$(cd "$(dirname "$GGUF")" && pwd)/$(basename "$GGUF")"
-MF="$ROOT/config/Modelfiles/${NAME}.Modelfile"
-cat >"$MF" <<EOF
-FROM ${ABS}
-PARAMETER num_ctx ${CTX}
-EOF
+SAFE_NAME="$(printf '%s' "$NAME" | tr '/:' '__')"
+MF="$ROOT/config/Modelfiles/${SAFE_NAME}.Modelfile"
+{
+  echo "FROM ${ABS}"
+  if [[ -n "$MMPROJ" ]]; then
+    [[ -f "$MMPROJ" ]] || { echo "ERROR: mmproj not found: $MMPROJ"; exit 1; }
+    MMPROJ_ABS="$(cd "$(dirname "$MMPROJ")" && pwd)/$(basename "$MMPROJ")"
+    echo "FROM ${MMPROJ_ABS}"
+  fi
+  echo "PARAMETER num_ctx ${CTX}"
+} >"$MF"
 
 echo "Modelfile -> $MF"
 echo "Creating ollama model: $NAME"

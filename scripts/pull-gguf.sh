@@ -53,8 +53,13 @@ for arg in "$@"; do
     --link) DO_LINK=1 ;;
     --link-only) DO_LINK=1; LINK_ONLY=1 ;;
     -h|--help) grep -E '^#( |=)' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-    main|deep|fast|embed|chat|reason|rerank) TIERS+=("$arg") ;;
-    *) echo "Unknown arg: $arg"; exit 1 ;;
+    *)
+      if is_known_llm_tier "$arg"; then
+        TIERS+=("$arg")
+      else
+        echo "Unknown arg: $arg"; exit 1
+      fi
+      ;;
   esac
 done
 
