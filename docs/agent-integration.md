@@ -45,7 +45,7 @@ curl http://127.0.0.1:11434/v1/models
 ## Hermes Agent（已接入）
 
 `~/.hermes/config.yaml` 中已注册 `local-ollama` provider，并挂在 `fallback_providers`
-链**末尾**（云端全挂时自动降级到本地）：
+链**末尾**（云端全挂时自动降级到本地）。本地尾部 = 当前 lm **main → fast**：
 
 ```yaml
 providers:
@@ -53,12 +53,12 @@ providers:
     base_url: http://127.0.0.1:11434/v1
     api_key: ollama
     api_mode: chat_completions
-    model: qwen3.5:9b
-    default_model: qwen3.5:9b
-    models: [qwen3.5:9b]
+    model: qwen3.8:27b-q4_K_M
+    default_model: qwen3.8:27b-q4_K_M
 fallback_providers:
-  # ...云端条目...
-  - {provider: local-ollama, model: qwen3.5:9b}   # 本地兜底，最后才用
+  # ...yunwu 云端条目（22）...
+  - {provider: local-ollama, model: qwen3.8:27b-q4_K_M}  # main
+  - {provider: local-ollama, model: qwen3.5:9b}           # fast
 ```
 
 **前置条件（`lm` 侧只需一条）**：`lm deploy` —— 拉起 Ollama daemon 并按 manifest 拉齐权重
@@ -68,9 +68,29 @@ fallback_providers:
 手动指定本地模型跑 Hermes：
 
 ```bash
-hermes chat -q "..." -m qwen3.5:9b --provider local-ollama
+hermes chat -q "..." -m qwen3.8:27b-q4_K_M --provider local-ollama
 ```
 
 > 注意：Qwen thinking 系在 OpenAI 兼容接口下 reasoning 占用 completion tokens，
 > 调用方 `max_tokens` 需 ≥2048，否则回复会被 thinking 吃光（finish=length，content 空）。
-> 16GB 机型上 Hermes 完整系统提示 + thinking 的首轮延迟约为分钟级，属正常现象。
+
+## OpenClaw（本机已接入）
+
+配置文件：`~/.openclaw/openclaw.json`（provider `local-ollama` → `http://127.0.0.1:11434/v1`）。
+
+| 项 | 值 |
+|----|-----|
+| **默认模型** | `local-ollama/qwen3.8-heretic:27b-q4_K_M`（alias: `heretic`） |
+| 其它本机档 | `main` / `deep` / `fast` / `redteam` / `redfast` / `crack` / `chat` / `reason` |
+| **fallback** | 与 Hermes `fallback_providers` **同一条链**（yunwu 22 + local main → fast） |
+
+```bash
+lm start                                          # 只起 daemon，不预加载权重
+openclaw models status --plain                    # 应显示 heretic
+# 用完省内存：
+ollama stop qwen3.8-heretic:27b-q4_K_M            # 卸模型
+lm stop                                           # 关守护进程
+```
+
+切回云端默认（示例）：`openclaw models set yunwu-claude/claude-opus-4-8`。
+换本地其它档：`openclaw models set main`（或 `local-ollama/qwen3.8:27b-q4_K_M`）。

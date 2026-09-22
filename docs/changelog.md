@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-23（OpenClaw 接入 lm；fallback 对齐 Hermes）
+
+- `~/.openclaw/openclaw.json`：`local-ollama` 对齐当前 lm 清单（heretic/main/deep/fast/redteam/redfast/crack/chat/reason）。
+- 默认模型：`local-ollama/qwen3.8-heretic:27b-q4_K_M`；agent `models.json` 同步。
+- 恢复空的 `~/.hermes/config.yaml`（自 `bak-pre-ucloud-overlay`）；本地尾部改为 main→fast（`qwen3.8:27b-q4_K_M` → `qwen3.5:9b`）。
+- OpenClaw `agents.defaults.model.fallbacks` 与 Hermes `fallback_providers` 同一条 24 项链（云端 yunwu 22 + 本地 main/fast）；文档见 `docs/agent-integration.md`。
+
 ## 2026-09-19（对齐攻防补 heretic / crack）
 
 - 新增 **heretic** / **crack**：RVN `RVN-Q4_K_M-multilingual.gguf` 与 CRACK Q4_K_M（+ mmproj），GGUF 导入 Ollama（无原生 tag）。
